@@ -13,3 +13,4 @@ urlpatterns = [
     path('signup.html', views.SignUp.as_view(), name='signup'),
 ]
 
+

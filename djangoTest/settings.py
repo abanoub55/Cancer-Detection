@@ -125,7 +125,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
         "/home/abanoub/PycharmProjects/djangoTest/templates/static",
 )
-#LOGIN_REDIRECT_URL = "/home/index.html"
 
 AUTH_USER_MODEL = 'cancerApp.Doctor'
 

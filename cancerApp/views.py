@@ -4,11 +4,11 @@ import shutil
 import zipfile
 
 import cv2
-import dicom  # for reading dicom files
 import matplotlib.pyplot as plt
 import numpy as np
 import \
     pandas as pd  # for some simple data analysis (right now, just to load in the labels data and quickly reference it)
+import pydicom  # for reading dicom files
 import tensorflow as tf
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -20,9 +20,9 @@ from .forms import CustomUserCreationForm
 
 # Create your views here.
 
+
 home_dir = '/home/abanoub/project_data/'
 data_dir = home_dir + 'patients/'
-
 labels = pd.read_csv('Labels.csv')
 
 IMG_PX_SIZE = 80
@@ -169,7 +169,7 @@ def process_data(patient, labels_df, img_px_size=50, hm_slices=20, visualize=Fal
 
     path = data_dir + patient + '/' + seriries_id[0]
 
-    slices = [dicom.read_file(path + '/' + s) for s in os.listdir(path)]
+    slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
 
     slices.sort(key=lambda x: int(x.SliceLocation))
 

@@ -2,7 +2,6 @@ import math
 import os
 import shutil
 import zipfile
-
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np

@@ -3,12 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5fa62584-8975-4aad-a810-a9c55ba7a997" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cancerApp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/cancerApp/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cancerApp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/cancerApp/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dogsvscats-0.001-2conv-basic.model.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dogsvscats-0.001-2conv-basic.model.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dogsvscats-0.001-2conv-basic.model.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/diagnosis.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/diagnosis.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -81,8 +76,8 @@
           <entry key="css" value="834" />
           <entry key="html" value="2492" />
           <entry key="js" value="424" />
-          <entry key="py" value="4177" />
-          <entry key="txt" value="24" />
+          <entry key="py" value="4182" />
+          <entry key="txt" value="40" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
@@ -90,8 +85,8 @@
           <entry key="CSS" value="834" />
           <entry key="HTML" value="2492" />
           <entry key="JavaScript" value="424" />
-          <entry key="PLAIN_TEXT" value="24" />
-          <entry key="Python" value="4177" />
+          <entry key="PLAIN_TEXT" value="40" />
+          <entry key="Python" value="4182" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts" />
@@ -100,14 +95,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cancerApp/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="24" column="28" selection-start-line="24" selection-start-column="28" selection-end-line="24" selection-end-column="28" />
-              <folding>
-                <element signature="e#0#35#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="168">
+              <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -125,7 +117,7 @@
         <entry file="file://$PROJECT_DIR$/templates/diagnosis.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="288">
-              <caret line="12" column="87" selection-start-line="12" selection-start-column="87" selection-end-line="12" selection-end-column="87" />
+              <caret line="12" column="26" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -157,14 +149,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cancerApp/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="312">
-              <caret line="13" column="1" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
-              <folding>
-                <element signature="e#0#37#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="384">
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
             </state>
           </provider>
         </entry>
@@ -251,8 +240,8 @@
         <option value="$PROJECT_DIR$/djangoTest/settings.py" />
         <option value="$PROJECT_DIR$/djangoTest/urls.py" />
         <option value="$PROJECT_DIR$/templates/diagnosis.html" />
-        <option value="$PROJECT_DIR$/cancerApp/views.py" />
         <option value="$PROJECT_DIR$/cancerApp/urls.py" />
+        <option value="$PROJECT_DIR$/cancerApp/views.py" />
       </list>
     </option>
   </component>
@@ -478,7 +467,21 @@
       <option name="project" value="LOCAL" />
       <updated>1543869126557</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="model added">
+      <created>1543871474257</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1543871474257</updated>
+    </task>
+    <task id="LOCAL-00004" summary="model added">
+      <created>1543872280036</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1543872280036</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -505,7 +508,7 @@
     <frame x="67" y="25" width="1373" height="875" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2690279" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2690279" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -519,7 +522,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50037676" side_tool="true" weight="0.32931727" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.4996232" visible="true" weight="0.27114093" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.4996232" visible="true" weight="0.27114093" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32931727" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -537,7 +540,11 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="first commit" />
     <MESSAGE value="pyCommit" />
-    <option name="LAST_COMMIT_MESSAGE" value="pyCommit" />
+    <MESSAGE value="model added" />
+    <option name="LAST_COMMIT_MESSAGE" value="model added" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -758,30 +765,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cancerApp/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/templates/diagnosis.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
-          <caret line="12" column="87" selection-start-line="12" selection-start-column="87" selection-end-line="12" selection-end-column="87" />
+          <caret line="12" column="26" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cancerApp/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="24" column="28" selection-start-line="24" selection-start-column="28" selection-end-line="24" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cancerApp/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="13" column="1" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
-          <folding>
-            <element signature="e#0#37#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="168">
+          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
         </state>
       </provider>
     </entry>

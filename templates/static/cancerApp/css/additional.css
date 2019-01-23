@@ -19,7 +19,7 @@
 
 
 .login{
-    margin-top: 200px;
+    margin-top: 500px;
     margin-bottom: 500px;
     text-align: center;
     font-size: x-large;
@@ -27,15 +27,17 @@
 
 .btn{
     width:150px;
-    height:50px;
+    height:150px;
     font-size:x-large;
     margin-top: 30px;
 }
 
 .greeting{
     margin-right:50px;
-    color:white;
-    text-align: left;
+    color:black;
+    background-color: grey;
+    text-align: center;
+    font-size: x-large;
 }
 
 .predForm{

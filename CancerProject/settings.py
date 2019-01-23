@@ -37,7 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD:CancerProject/settings.py
     'cancerApp.apps.CancerProjectConfig',
+=======
+    'cancerApp.apps.CancerAppConfig',
+>>>>>>> 87612f7e06953edef1fe67367cd0c3f749f6f980:CancerProject/settings.py
 ]
 
 

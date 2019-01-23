@@ -34,8 +34,8 @@
 
 .greeting{
     margin-right:50px;
-    color:black;
-    background-color: grey;
+    text-color:black;
+    background-color: blue;
     text-align: center;
     font-size: x-large;
 }

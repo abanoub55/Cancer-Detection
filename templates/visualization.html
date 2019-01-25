@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
     {% load static %}
-{% if user.authenticated %}
+{% if user.is_authenticated %}
 
 {% else %}
 <center>

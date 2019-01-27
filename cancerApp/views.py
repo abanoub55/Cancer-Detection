@@ -14,11 +14,10 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 from tqdm import tqdm
-
 from .forms import CustomUserCreationForm
 
 # Create your views here.
-home_dir = '/home/abanoub/project_data/'
+home_dir = 'D:/BosyCat/FCI/GP/project_data/'
 data_dir = home_dir + 'patients/'
 labels = pd.read_csv('Labels.csv')
 

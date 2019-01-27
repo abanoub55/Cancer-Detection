@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
     {% load static %}
+{% if user.is_authenticated %}
 
+{% else %}
+<center>
+<p>sorry, you must log in to use this</p>
+<a href="{% url 'login' %}">Login here!</a>
+</center>
+{% endif %}
 
 {% endblock %}

@@ -123,7 +123,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 #STATIC_ROOT = "/home/abanoub/PycharmProjects/CancerProject/"
 STATICFILES_DIRS = (
-        "/home/abanoub/PycharmProjects/CancerProject/templates/static",
+        (os.path.join(BASE_DIR, "templates/static")),
 )
 
 AUTH_USER_MODEL = 'cancerApp.Doctor'

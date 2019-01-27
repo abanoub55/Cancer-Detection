@@ -1,13 +1,12 @@
 <!doctype html>
 <html lang="en">
- {% load static %}
+    {% load staticfiles %}
   <head>
     <link rel="icon" href="{% static 'cancerApp/lung.ico' %}" type="image/gif" sizes="16x16">
     <title>{% block title %} Cancer App {% endblock %}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300, 400, 700" rel="stylesheet">
-    {% load staticfiles %}
     <link rel="stylesheet" href='{% static "cancerApp/css/bootstrap.css" %}'>
     <link rel="stylesheet" href='{% static "cancerApp/css/animate.css" %}'>
     <link rel="stylesheet" href='{% static "cancerApp/css/owl.carousel.min.css" %}'>
@@ -52,7 +51,7 @@
       </div>
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-          <a class="navbar-brand" href="{% url 'home' %}">Medi<span>+</span>  </a>
+          <!--<a class="navbar-brand" href="{% url 'home' %}">Medi<span>+</span>  </a>-->
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -107,56 +106,40 @@
           <div class="col-md-3 mb-5">
             <h3>Services</h3>
             <ul class="footer-link list-unstyled">
-              <li><a href="#">Find a doctor</a></li>
-              <li><a href="#">Urgent Care</a></li>
-              <li><a href="#">Emergency Care</a></li>
-              <li><a href="#">Procedures &amp; Treatments</a></li>
-              <li><a href="#">Online Services</a></li>
+              <li><a href="{% url 'visualize' %}">Visualization</a></li>
+              <li><a href="{% url 'stats' %}">Statistics</a></li>
+              <li><a href="{% url 'diagnosis' %}">Cancer Diagonsis</a></li>
             </ul>
           </div>
-          <div class="col-md-3 mb-5">
-            <h3>Latest News</h3>
-            <ul class="footer-link list-unstyled">
-              <li><a href="#">News &amp; Press Releases</a></li>
-              <li><a href="#">Health Care Professional News</a></li>
-              <li><a href="#">Events &amp; Conferences</a></li>
-            </ul>
-          </div>
-          <div class="col-md-3 mb-5">
-            <h3>About</h3>
-            <ul class="footer-link list-unstyled">
-              <li><a href="#">About The Hospital</a></li>
-              <li><a href="#">Testimonials</a></li>
-              <li><a href="#">Accreditations &amp; Awards</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Feedback</a></li>
-            </ul>
-          </div>
-          <div class="col-md-3 mb-5">
-            <h3>Location &amp; Contact</h3>
-            <p class="mb-5">134 Street Name, City Name Here, United States</p>
 
-            <h4 class="text-uppercase mb-3 h6 text-white">Email</h4>
+          <div class="col-md-3 mb-5">
+            <h3>Email</h3>
             <p class="mb-5"><a href="mailto:info@yourdomain.com">info@yourdomain.com</a></p>
+          </div>
 
-            <h4 class="text-uppercase mb-3 h6 text-white">Phone</h4>
+          <div class="col-md-3 mb-5">
+            <h3>Phone</h3>
             <p>+1 24 435 3533</p>
+          </div>
 
+          <div class="col-md-3 mb-5">
+            <h3>Location</h3>
+            <p class="mb-5">134 Street Name, City Name Here, United States</p>
           </div>
         </div>
 
-        <div class="row pt-md-3 element-animate">
-          <div class="col-md-12">
-            <hr class="border-t">
-          </div>
-          <div class="col-md-6 col-sm-12 copyright">
-            <p>&copy; 2018 Colorlib Medi+. Designed &amp; Developed by <a href="https://colorlib.com/">Colorlib</a></p>
-          </div>
-          <div class="col-md-6 col-sm-12 text-md-right text-sm-left">
-            <a href="#" class="p-2"><span class="fa fa-facebook"></span></a>
-            <a href="#" class="p-2"><span class="fa fa-twitter"></span></a>
-            <a href="#" class="p-2"><span class="fa fa-instagram"></span></a>
-          </div>
+        <!--<div class="row pt-md-3 element-animate">-->
+          <!--<div class="col-md-12">-->
+            <!--<hr class="border-t">-->
+          <!--</div>-->
+          <!--<div class="col-md-6 col-sm-12 copyright">-->
+            <!--<p>&copy; 2018 Colorlib Medi+. Designed &amp; Developed by <a href="https://colorlib.com/">Colorlib</a></p>-->
+          <!--</div>-->
+          <!--<div class="col-md-6 col-sm-12 text-md-right text-sm-left">-->
+            <!--<a href="#" class="p-2"><span class="fa fa-facebook"></span></a>-->
+            <!--<a href="#" class="p-2"><span class="fa fa-twitter"></span></a>-->
+            <!--<a href="#" class="p-2"><span class="fa fa-instagram"></span></a>-->
+          <!--</div>-->
         </div>
       </div>
     </footer>

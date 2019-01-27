@@ -4,7 +4,8 @@ body {
   font-weight: 400;
   font-size: 16px;
   line-height: 1.8;
-  color: #868e96;
+  color: black;
+  text-align: left;
 }
 
 a {
@@ -26,6 +27,7 @@ h1, h2, h3, h4, h5 {
   outline: none;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
+  margin-left: 70px;
 }
 
 /* Header */
@@ -53,15 +55,16 @@ header .top-bar {
 
 header .top-bar a {
   color: #fff;
-  padding: 10px;
-  font-size: 13px;
+  padding: 0vw;
+  /*font-size: 3vh;*/
   display: inline-block;
 }
 
 header .top-bar .cta-btn {
   display: inline-block;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 1.5vw;
+  padding-left: 1.5vw;
+/*  margin-right: auto;*/
   background: #5AC8D8;
 }
 
@@ -72,6 +75,9 @@ header .top-bar .cta-btn:hover {
 
 header .top-bar .social {
   margin-bottom: 0;
+  margin-left: auto;
+  padding-right: 0vw;
+  padding-left: 0vw;
 }
 
 header .top-bar .social li {
@@ -719,6 +725,7 @@ header .navbar .dropdown-menu a {
   background: #f2f2f2;
   background: #283E56;
   color: rgba(255, 255, 255, 0.7);
+  margin-top: 100px;
 }
 
 .site-footer a {

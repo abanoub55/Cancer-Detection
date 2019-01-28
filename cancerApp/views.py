@@ -91,7 +91,7 @@ def prediction(request):
                 pred_x = data[0]
         except Exception:
             pass
-
+        tf.reset_default_graph()
         pred_x = np.reshape(pred_x, [-1, IMG_PX_SIZE, IMG_PX_SIZE, HM_SLICES, 1])
         x = tf.placeholder('float')
         weights = {'W_conv1': tf.Variable(tf.random_normal([3, 3, 3, 1, 32])),

@@ -3,6 +3,7 @@
 {% load static %}
 {% if user.is_authenticated %}
        <h1 class="pheader">Image Classifier</h1>
+
 <div class="predForm">
     <form id="upload-file" method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -30,6 +31,12 @@
     </h3>
 
 </div>
+{% else %}
+<center>
+<p>sorry, you must log in to use this</p>
+<a href="{% url 'login' %}">Login here!</a>
+</center>
+{% endif %}
 
 {% else %}
 <center>

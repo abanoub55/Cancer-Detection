@@ -4,6 +4,7 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+<body class="login-img">
     <div class="login">
 <form method="post">
   {% csrf_token %}
@@ -11,4 +12,5 @@
   <button type="submit" class="btn btn-success">Login</button>
 </form>
     </div>
+</body>
 {% endblock %}

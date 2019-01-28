@@ -47,6 +47,7 @@ $(document).ready(function () {
                 $('.loader').hide();
                 $('#result').fadeIn(600);
                 $('#result').text(' Result:  ' + data.toString());
+                
                 console.log('Success!');
             },
         });

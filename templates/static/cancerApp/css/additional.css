@@ -19,25 +19,52 @@
 
 
 .login{
-    margin-top: 500px;
-    margin-bottom: 500px;
+    margin-top: 10%;
+    margin-bottom: 10%;
     text-align: center;
-    font-size: x-large;
+    font-size: auto;
 }
 
+.login-img{
+    background-image:url("../img/login.jpg");
+    background-position: auto;
+    background-repeat: no-repeat;
+    background-size: 100%;
+
+}
+
+.signup-img{
+    background-image:url("../img/signup.jpg");
+    background-position: auto;
+    background-repeat: no-repeat;
+    background-size: 100%;
+
+}
+/*
+.prediction-img{
+    background-image:url("../img/prediction-img.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}*/
+
 .btn{
-    width:150px;
-    height:150px;
+   /* width: auto;
+    height: auto;
     font-size:x-large;
-    margin-top: 30px;
+    margin-top: 20px;*/
+    display: inline-block;
+    padding-right: 1.5vw;
+    padding-left: 1.5vw;
 }
 
 .greeting{
-    margin-right:50px;
-    text-color:black;
-    background-color: blue;
-    text-align: center;
-    font-size: x-large;
+    margin-right: 0%;
+    margin-left: 60%;
+    /*text-color: 0x;*/
+    background-color: #007bff;
+    font-size: auto;
+    color: white;
 }
 
 .predForm{

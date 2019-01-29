@@ -78,12 +78,12 @@ function () {
             cache: false,
             processData: false,
             async: true,
-            url: '/visualizeFn',
+            url: 'visualizeFn',
             success: function (data) {
                 // Get and display the result
                 $('.loader').hide();
                 $('#result').fadeIn(600);
-                $('#imagePreview').css('background-image', 'url('+ data.target.result +')');
+                $('#imagePreview').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
                 console.log('Success!');
             },
         });

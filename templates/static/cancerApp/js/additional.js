@@ -13,6 +13,10 @@ function () {
                 $('#imagePreview').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/prediction.jpg')");
                 $('#imagePreview').hide();
                 $('#imagePreview').fadeIn(650);
+                $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/login.jpg')");
+                $('#imagePreview2').hide();
+                $('#imagePreview2').fadeIn(650);
+
             }
             reader.readAsDataURL(input.files[0]);
         }

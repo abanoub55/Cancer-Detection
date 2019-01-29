@@ -137,9 +137,9 @@ def prediction(request):
             result = sess.run(tf.argmax(output, 1)[0], feed_dict={x: pred_x})
 
             if result == 0:
-                return HttpResponse('suspected patient is healthy')
+                return HttpResponse('patient is healthy')
             elif result == 1:
-                return HttpResponse('patient has cancer')
+                return HttpResponse('patient is suspected to have cancer')
             else:
                 return HttpResponse('unknown result')
 
@@ -152,6 +152,8 @@ def chunks(l, n):
 
 def med(l):
     return sum(l) / len(l)
+
+def visualizeFn():
 
 
 def process_data(patient, labels_df, img_px_size=50, hm_slices=20, visualize=False):

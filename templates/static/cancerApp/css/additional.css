@@ -1,6 +1,6 @@
 .img-preview {
-    width: 256px;
-    height: 256px;
+    width: 512px;
+    height: 512px;
     position: relative;
     border: 5px solid #F8F8F8;
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
@@ -8,6 +8,15 @@
     margin-bottom: 1em;
     margin-left: auto;
     margin-right: auto;
+}
+
+.login-line {
+    margin-top:10px;
+    margin-left:20px;
+}
+
+.signup-form{
+   margin-left:10px;
 }
 
 .pheader{
@@ -39,19 +48,8 @@
     background-repeat: no-repeat;
     background-size: 100%;
 }
-/*
-.prediction-img{
-    background-image:url("../img/prediction-img.jpg");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100%;
-}*/
 
 .btn{
-   /* width: auto;
-    height: auto;
-    font-size:x-large;
-    margin-top: 20px;*/
     display: inline-block;
     padding-right: 1.5vw;
     padding-left: 1.5vw;
@@ -67,13 +65,13 @@
 }
 
 .predForm{
-    margin-bottom: 1000px;
+    margin-bottom: 100px;
     text-align: center;
 }
 .img-preview>div {
     width: 100%;
     height: 100%;
-    background-size: 256px 256px;
+    background-size: 512px 512px;
     background-repeat: no-repeat;
     background-position: center;
 }

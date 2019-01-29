@@ -48,14 +48,12 @@ function () {
                 $('.loader').hide();
                 $('#result').fadeIn(600);
                 $('#result').text(' Result:  ' + data.toString());
-                if(data.toString()=='patient has cancer')
+                if(data.toString()=='patient is suspected to have cancer')
                 {
-                    console.log("cancer")
                     $('#imagePreview').css("background-image", "url('http://127.0.0.1:8000/static/cancerApp/img/unhealthy.jpg')");
                 }
                 else
                 {
-                    console.log("non")
                     $('#imagePreview').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/healthy.jpg')");
 
                 }
@@ -63,4 +61,32 @@ function () {
             },
         });
     });
+
+    $('#btn-visualize').click(function () {
+        var form_data = new FormData($('#upload-file')[0]);
+
+        form_data.append('image',$('#upload-file')[0])
+        // Show loading animation
+        $(this).hide();
+        $('.loader').show();
+
+        // Make prediction by calling api /predict
+        $.ajax({
+            type: 'POST',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            async: true,
+            url: '/visualizeFn',
+            success: function (data) {
+                // Get and display the result
+                $('.loader').hide();
+                $('#result').fadeIn(600);
+                $('#imagePreview').css('background-image', 'url('+ data.target.result +')');
+                console.log('Success!');
+            },
+        });
+    });
+
 });

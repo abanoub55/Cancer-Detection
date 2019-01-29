@@ -2,7 +2,9 @@
 {% block content %}
 {% load static %}
 {% if user.is_authenticated %}
-       <h1 class="pheader">Image Classifier</h1>
+
+<body style="background-color:lightgrey">
+       <h1 class="pheader">Consultation</h1>
 
 <div class="predForm">
     <form id="upload-file" method="post" enctype="multipart/form-data">
@@ -20,7 +22,7 @@
             </div>
         </div>
         <div>
-            <button type="button" class="btn btn-primary btn-lg " id="btn-predict">Predict!</button>
+            <button type="button" class="btn btn-primary btn-lg " id="btn-predict">Diagnose</button>
         </div>
     </div>
 
@@ -40,3 +42,4 @@
 
 
 {% endblock %}
+</body>

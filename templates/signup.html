@@ -6,7 +6,7 @@
 {% block content %}
 <body class="signup-img">
 <div>
-<form method="post">
+<form method="post" class="signup-form">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit" class="btn btn-success">Sign up</button>
@@ -14,7 +14,7 @@
 </div>
 </body>
 
-<p>
+<p class="login-line">
     if you already have an account you can <a href="{% url 'login' %}">login</a> here
 </p>
 {% endblock %}

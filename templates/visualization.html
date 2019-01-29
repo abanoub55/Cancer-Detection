@@ -1,8 +1,38 @@
 {% extends 'base.html' %}
 {% block content %}
-    {% load static %}
+{% load static %}
 {% if user.is_authenticated %}
 
+<body style="background-color:lightgrey">
+       <h1 class="pheader">Visualization</h1>
+
+<div class="predForm">
+    <form id="upload-file" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+        <label for="imageUpload" class="upload-label">
+            Choose...
+        </label>
+
+        <input type="file" name="file" id="imageUpload" accept=".png, .jpg, .jpeg, .zip">
+    </form>
+    <br><br>
+    <div class="image-section" style="display:none;">
+        <div class="img-preview">
+            <div id="imagePreview">
+            </div>
+        </div>
+        <div>
+            <button type="button" class="btn btn-primary btn-lg " id="btn-visualize">Visualize</button>
+        </div>
+    </div>
+
+    <div class="loader" style="display:none;"></div>
+
+    <h3 id="result">
+        <span> </span>
+    </h3>
+
+</div>
 {% else %}
 <center>
 <p>sorry, you must log in to use this</p>
@@ -10,4 +40,6 @@
 </center>
 {% endif %}
 
+
 {% endblock %}
+</body>

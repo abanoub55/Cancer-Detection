@@ -1,4 +1,3 @@
-import math
 import os
 import shutil
 import zipfile
@@ -15,11 +14,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from tqdm import tqdm
 from .forms import CustomUserCreationForm
-
-
 import scipy.ndimage
-
-
 from skimage import measure, morphology
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
@@ -240,9 +235,9 @@ def plot_3d(image, threshold=-300):
     
     # Position the scan upright,
     # so the head of the patient would be at the top facing the camera
-    p = image.transpose(2,1,0)
+    p = image.transpose(2, 1, 0)
     
-    verts, faces, normals, values = measure.marching_cubes_classic(p, threshold)
+    verts, faces, normals, values = measure.marching_cubes(p, threshold)
 
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(111, projection='3d')
@@ -359,11 +354,7 @@ def visualizeFn(request):
         return HttpResponse("Done..")
 
 
-
 def process_data(patient,labels_df,img_px_size=50, hm_slices=20, visualize=False):
-    
-    
-     
     label = labels_df.loc[labels_df['PatientID'] == patient]
     
     label = label['Label']

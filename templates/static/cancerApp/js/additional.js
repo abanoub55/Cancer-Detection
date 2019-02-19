@@ -24,6 +24,7 @@ function () {
     $("#imageUpload").change(function () {
         $('.image-section').show();
         $('#btn-predict').show();
+        $('#btn-visualize').show();
         $('#result').text('');
         $('#result').hide();
         readURL(this);
@@ -68,13 +69,12 @@ function () {
 
     $('#btn-visualize').click(function () {
         var form_data = new FormData($('#upload-file')[0]);
-
         form_data.append('image',$('#upload-file')[0])
         // Show loading animation
         $(this).hide();
         $('.loader').show();
 
-        // Make prediction by calling api /predict
+        // Make prediction by calling api visualize
         $.ajax({
             type: 'POST',
             data: form_data,
@@ -87,7 +87,7 @@ function () {
                 // Get and display the result
                 $('.loader').hide();
                 $('#result').fadeIn(600);
-                $('#imagePreview').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
+                $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
                 console.log('Success!');
             },
         });

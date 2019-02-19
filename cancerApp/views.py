@@ -28,7 +28,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 # Create your views here.
 home_dir = 'project_data/'
 data_dir = home_dir + 'patients/'
-labels = pd.read_csv('Labels.csv')
+labels = pd.read_csv('FinalLabels.csv')
 
 IMG_PX_SIZE = 80
 
@@ -89,9 +89,12 @@ def prediction(request):
         else:
             os.mkdir(data_dir)
             print('folder created!!')
-        with zipfile.ZipFile(f, 'r') as zip_ref:
-            zip_ref.extractall(data_dir)
-            print('extracted successfully!!')
+        try:
+            with zipfile.ZipFile(f, 'r') as zip_ref:
+                zip_ref.extractall(data_dir)
+                print('extracted successfully!!')
+        except Exception:
+            print('corrupted slice!')
         prepareImage()
         much_data = np.load("much_data.npy")
         pred_x = np.array([])
@@ -242,7 +245,7 @@ def plot_3d(image, threshold=-300):
     # so the head of the patient would be at the top facing the camera
     p = image.transpose(2,1,0)
     
-    verts, faces, normals, values = measure.marching_cubes_classic(p, threshold)
+    verts, faces, normals, values = measure.marching_cubes(p, threshold)
 
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(111, projection='3d')
@@ -425,7 +428,7 @@ def prepareImage():
 
     much_data = []
 
-    for patient in tqdm(patients[0:20]):
+    for patient in tqdm(patients[:1]):
         # if num % 10 == 0:
         #     print(num)
         try:

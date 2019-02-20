@@ -1,3 +1,5 @@
 /.idea/*
-*.pyc
 /project_data/*
+/cancerApp/migrations/__pycache__/*
+/CancerProject/__pycache__/*
+

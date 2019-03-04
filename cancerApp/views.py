@@ -77,6 +77,7 @@ def prediction(request):
     if request.method == 'POST':
 
         f = request.FILES['file']
+        pid = str(f).split('.')[0]
         if os.path.isdir(data_dir):
             shutil.rmtree(data_dir)
             print("folder deleted!!")
@@ -147,15 +148,19 @@ def prediction(request):
             output = tf.matmul(fc2, weights['out']) + biases['out']
 
             result = sess.run(tf.argmax(output, 1)[0], feed_dict={x: pred_x})
-            stat = Statistics()
-            stat.username = request.user.username
-            if result == 0:
-                stat.label = "Nocancer"
+            if len(Statistics.objects.filter(patient_id=pid, username=request.user.username)) == 0:
+                stat = Statistics()
+                stat.username = request.user.username
+                stat.patient_id = pid
+                if result == 0:
+                    stat.label = "Nocancer"
+                else:
+                    stat.label = "Cancer"
                 stat.save()
+
+            if result == 0:
                 return HttpResponse('patient is healthy')
             elif result == 1:
-                stat.label = "Cancer"
-                stat.save()
                 return HttpResponse('patient is suspected to have cancer')
             else:
                 return HttpResponse('unknown result')

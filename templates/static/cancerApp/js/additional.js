@@ -67,6 +67,8 @@ function () {
         });
     });
 
+    // Visualization
+    if(document.getElementById('visualizeLung').checked){
     $('#btn-visualize').click(function () {
         var form_data = new FormData($('#upload-file')[0]);
 
@@ -75,7 +77,10 @@ function () {
         $(this).hide();
         $('.loader').show();
 
-        // Make prediction by calling api /predict
+
+        // Make visualization by calling api /visualize
+
+        //$("#visualizeLung").click(function()){
         $.ajax({
             type: 'POST',
             data: form_data,
@@ -92,6 +97,15 @@ function () {
                 console.log('Success!');
             },
         });
+       // };
+        /*$("#visualizeRep").click(function()){
+            console.log('Success!');
+        };*/
     });
+    };
+    else if(document.getElementById('visualizeRep').checked)
+    {
+        window.alert("Done");
+    };
 
 });

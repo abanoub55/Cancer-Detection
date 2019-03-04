@@ -9,6 +9,7 @@
 <div class="predForm">
     <form id="upload-file" method="post" enctype="multipart/form-data">
             {% csrf_token %}
+
         <label for="imageUpload" class="upload-label">
             Choose...
         </label>
@@ -21,6 +22,14 @@
             <div id="imagePreview2">
             </div>
         </div>
+
+        <div class="myRadio">
+            <label for="visualizeLung" > Lung Visualization </label>
+            <input type="radio" name="visualize" id="visualizeLung" value="visualizeLung"><br>
+            <label for="visualizeRep" > Rep Cavity Visualization </label>
+            <input type="radio" name="visualize" id="visualizeRep" value="visualizeRep"><br>
+        </div>
+
         <div>
             <button type="button" class="btn btn-primary btn-lg " id="btn-visualize">Visualize</button>
         </div>

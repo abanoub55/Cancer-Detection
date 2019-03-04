@@ -94,4 +94,21 @@ function () {
         });
     });
 
+      $('#btn-stats').click(function () {
+        $.ajax({
+            type: 'GET',
+            contentType: false,
+            cache: false,
+            processData: false,
+            async: true,
+            url: 'showStats',
+            success: function (data) {
+            if(data == "user has no activity yet"){ window.alert(data);}
+           else{ document.getElementById('img').src = "../static/cancerApp/img/chart.jpg";}
+            console.log('Success!');
+            },
+        });
+    });
+
 });
+

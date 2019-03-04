@@ -2,7 +2,13 @@
 {% block content %}
     {% load static %}
 {% if user.is_authenticated %}
+<div style="text-align:center">
+<button type="button" class="btn btn-success" id="btn-stats">Display Stats</button>
 
+</div>
+<div style="text-align:center;margin-top:20px">
+    <img id="img" src=""/>
+</div>
 {% else %}
 <center>
 <p>sorry, you must log in to use this</p>

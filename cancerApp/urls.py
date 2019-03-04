@@ -13,6 +13,8 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('signup.html', views.SignUp.as_view(), name='signup'),
     path('visualizeFn', views.visualizeFn, name='visualShow'),
+    path('showStats', views.showStats, name='showStats'),
 ]
+
 
 

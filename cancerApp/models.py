@@ -12,4 +12,8 @@ class Doctor(AbstractUser):
     address = models.CharField(max_length=20)
 
 
+class Statistics(models.Model):
+    patient_id = models.CharField(max_length=20, default='0')
+    username = models.CharField(max_length=20)
+    label = models.CharField(max_length=20)
 

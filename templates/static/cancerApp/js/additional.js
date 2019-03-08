@@ -21,6 +21,7 @@ function () {
             reader.readAsDataURL(input.files[0]);
         }
     }
+
     $("#imageUpload").change(function () {
         $('.image-section').show();
         $('#btn-predict').show();
@@ -29,6 +30,7 @@ function () {
         $('#result').hide();
         readURL(this);
     });
+
 
     // Predict
     $('#btn-predict').click(function () {
@@ -67,6 +69,8 @@ function () {
         });
     });
 
+
+     // Visualization
     $('#btn-visualize').click(function () {
         var form_data = new FormData($('#upload-file')[0]);
 
@@ -75,7 +79,9 @@ function () {
         $(this).hide();
         $('.loader').show();
 
-        // Make prediction by calling api /predict
+        // Make visualization by calling api /visualize
+        if(document.getElementById('visualizeLung').checked){
+    //    $("#visualizeLung").click(function(){
         $.ajax({
             type: 'POST',
             data: form_data,
@@ -83,18 +89,44 @@ function () {
             cache: false,
             processData: false,
             async: true,
-            url: 'visualizeFn',
+            url: 'lungStructure',
             success: function (data) {
-                // Get and display the result
+                // Get and display2 the result
                 $('.loader').hide();
+                $('#btn-visualize').show();
                 $('#result').fadeIn(600);
                 $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
-                console.log('Success!');
+                console.log('Lung Structure!');
             },
         });
+  //  });
+    }
+    else if(document.getElementById('visualizeRib').checked){
+      // $("#visualizeRep").click(function(){
+        $.ajax({
+            type: 'POST',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            async: true,
+            url: 'ribVisualize',
+            success: function (data) {
+                // Get and display2 the result
+                $('.loader').hide();
+                $('#btn-visualize').show();
+                $('#result').fadeIn(600);
+                $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
+                console.log("Rib Visulization");
+            },
+        });
+    //  });
+    };
     });
 
-      $('#btn-stats').click(function () {
+
+    /// Make statistics
+    $('#btn-stats').click(function () {
         $.ajax({
             type: 'GET',
             contentType: false,

@@ -12,7 +12,8 @@ urlpatterns = [
     path('stats.html', views.stats, name='stats'),
     path('login', views.login, name='login'),
     path('signup.html', views.SignUp.as_view(), name='signup'),
-    path('visualizeFn', views.visualizeFn, name='visualShow'),
+    path('ribVisualize', views.ribVisualize, name='visualShow'),
+    path('lungStructure', views.lungStructure, name='visualLung'),
     path('showStats', views.showStats, name='showStats'),
 ]
 

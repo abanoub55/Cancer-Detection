@@ -18,6 +18,17 @@ import scipy.ndimage
 from skimage import measure, morphology
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from .models import Statistics
+import pandas as pd
+import numpy as np
+from  tqdm import tqdm
+import os
+import matplotlib.pyplot as plt
+
+import scipy.ndimage
+
+
+from skimage import measure, morphology
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 # Create your views here.
 home_dir = 'project_data/'
@@ -157,10 +168,10 @@ def prediction(request):
                 else:
                     stat.label = "Cancer"
                 stat.save()
-
             if result == 0:
                 return HttpResponse('patient is healthy')
             elif result == 1:
+
                 return HttpResponse('patient is suspected to have cancer')
             else:
                 return HttpResponse('unknown result')
@@ -323,9 +334,10 @@ def segment_lung_mask(image, fill_lung_structures=True):
     return binary_image
 
 
-def visualizeFn(request):
+def ribVisualize(request):
     if request.method == 'POST':
 
+        print("Rib")
         f = request.FILES['file']
         if os.path.isdir(data_dir):
             shutil.rmtree(data_dir)
@@ -355,9 +367,9 @@ def visualizeFn(request):
         segmented_lungs = segment_lung_mask(pix_resampled, False)
         print('Done Segment')
 
-        plot_3d(segmented_lungs, 0)
+        plot_3d(pix_resampled, 400)
         print('Done Plot_3d')
-        return HttpResponse("Done..")
+        return HttpResponse("Rib Structure")
 
 
 def process_data(patient, labels_df, img_px_size=50, hm_slices=20, visualize=False):
@@ -436,3 +448,42 @@ def conv3d(x, W):
 def maxpool3d(x):
     #                        size of window         movement of window as you slide about
     return tf.nn.max_pool3d(x, ksize=[1, 2, 2, 2, 1], strides=[1, 2, 2, 2, 1], padding='SAME')
+
+
+def lungStructure(request):
+    if request.method == 'POST':
+
+        print("Lung")
+        f = request.FILES['file']
+        if os.path.isdir(data_dir):
+            shutil.rmtree(data_dir)
+            print("folder deleted!!")
+        else:
+            os.mkdir(data_dir)
+            print('folder created!!')
+        with zipfile.ZipFile(f, 'r') as zip_ref:
+            zip_ref.extractall(data_dir)
+            print('extracted successfully!!')
+        patient = os.listdir(data_dir)[0]
+        seriries_id = os.listdir(data_dir + patient + '/')
+
+        path = data_dir + patient + '/' + seriries_id[0]
+        print(path)
+
+        slices = []
+
+        slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
+
+        slices.sort(key=lambda x: int(x.ImagePositionPatient[2]))
+
+        image_o = get_pixels_hu(slices);
+        print('Done HU')
+        pix_resampled = resample(image_o, slices)
+        print('Done Resample')
+        segmented_lungs = segment_lung_mask(pix_resampled, True)
+        print('Done Segment')
+
+        plot_3d(segmented_lungs, 0)
+        print('Done Plot_3d')
+        return HttpResponse("Lung Structure")
+

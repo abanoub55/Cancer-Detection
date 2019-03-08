@@ -76,12 +76,13 @@ function () {
 
         form_data.append('image',$('#upload-file')[0])
         // Show loading animation
-        $(this).hide();
-        $('.loader').show();
+        
+        
 
         // Make visualization by calling api /visualize
         if(document.getElementById('visualizeLung').checked){
-    //    $("#visualizeLung").click(function(){
+        $('#btn-visualize').hide();
+    	$('.loader').show();
         $.ajax({
             type: 'POST',
             data: form_data,
@@ -102,7 +103,8 @@ function () {
   //  });
     }
     else if(document.getElementById('visualizeRib').checked){
-      // $("#visualizeRep").click(function(){
+      	$('#btn-visualize').hide();
+        $('.loader').show();
         $.ajax({
             type: 'POST',
             data: form_data,
@@ -120,7 +122,11 @@ function () {
                 console.log("Rib Visulization");
             },
         });
-    //  });
+    }
+    else {
+    	//$('.loader').hide();
+    	window.alert("No option was specified!")
+
     };
     });
 

@@ -18,11 +18,8 @@ import scipy.ndimage
 from skimage import measure, morphology
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from .models import Statistics
-import pandas as pd
-import numpy as np
-from  tqdm import tqdm
+from tqdm import tqdm
 import os
-import matplotlib.pyplot as plt
 import scipy.ndimage
 from skimage import measure, morphology
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -30,7 +27,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 # Create your views here.
 home_dir = 'project_data/'
 data_dir = home_dir + 'patients/'
-labels = pd.read_csv('Labels.csv')
+labels = pd.read_csv('FinalLabels.csv')
 
 IMG_PX_SIZE = 80
 
@@ -174,15 +171,15 @@ def prediction(request):
                 return HttpResponse('unknown result')
 
 
-def showStats(request):
+def cancerStats(request):
     labels = ['cancer', 'non-cancer']
     cancer = Statistics.objects.filter(username=request.user.username, label="Cancer")
     nocancer = Statistics.objects.filter(username=request.user.username, label="Nocancer")
+
     values = [len(cancer), len(nocancer)]
-    if len(cancer)==0 and len(nocancer)==0:
+    if len(cancer) == 0 and len(nocancer) == 0:
         return HttpResponse("user has no activity yet")
     fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
-
 
     def func(pct, allvals):
         absolute = int(pct / 100. * np.sum(allvals))
@@ -199,8 +196,92 @@ def showStats(request):
     plt.setp(autotexts, size=8, weight="bold")
 
     ax.set_title("Cancer stats")
-    plt.savefig("templates/static/cancerApp/img/chart.jpg")
+    plt.savefig("templates/static/cancerApp/img/cancer_chart.jpg")
+    plt.clf()
     return HttpResponse("stats are ready!")
+
+
+def isFound(el, listt):
+    i = 0
+    while i < len(listt):
+
+        if el == listt[i]:
+            return i
+        i += 1
+    return -1
+
+
+def genderStats(request):
+    patients = Statistics.objects.filter(username=request.user.username)
+    p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
+    global labels
+    all_genders = labels['Gender']
+    all_p_ids = labels['PatientID']
+    genders = []
+    i = 0
+    for p_id in p_ids:
+        print("im in!")
+        print("p_id = " + p_id)
+        ind = isFound(p_id, all_p_ids)
+        if (ind != -1):
+            print("found one!")
+            print("all_genders[i] = " + all_genders[ind])
+            genders.append(all_genders[ind])
+        i += 1
+
+    fig_labels = ['Male', 'Female']
+    males = [i for i in genders if i == 'Male']
+    females = [i for i in genders if i == 'Female']
+    values = [len(males), len(females)]
+    if len(males) == 0 and len(females) == 0:
+        return HttpResponse("user has no activity yet")
+    fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+
+    def func(pct, allvals):
+        absolute = int(pct / 100. * np.sum(allvals))
+        return "{:.1f}%".format(pct, absolute)
+
+    theme = plt.get_cmap('copper')
+    ax.set_prop_cycle("color", [theme(1. * i / 2) for i in range(3)])
+    wedges, texts, autotexts = ax.pie(values, autopct=lambda pct: func(pct, values),
+                                      textprops=dict(color="W"))
+
+    ax.legend(wedges, fig_labels,
+              title="labels",
+              loc="center left",
+              bbox_to_anchor=(1, 0, 0.5, 1))
+
+    plt.setp(autotexts, size=8, weight="bold")
+    ax.set_title("Gender stats")
+    plt.savefig("templates/static/cancerApp/img/gender_chart.jpg")
+    plt.clf()
+    return HttpResponse("gender Stats success!")
+
+
+def ageStats(request):
+    patients = Statistics.objects.filter(username=request.user.username)
+    p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
+    global labels
+    all_ages = labels['Age']
+    all_p_ids = labels['PatientID']
+    ages = []
+    i = 0
+    for p_id in p_ids:
+        ind = isFound(p_id, all_p_ids)
+        if ind != -1:
+            ages.append(all_ages[ind])
+        i += 1
+
+    bins = range(0, 120, 20)
+    if len(ages) == 0:
+        return HttpResponse("user has no activity yet")
+    plt.hist(ages, bins=bins)
+    plt.ylabel('Frequency')
+    plt.xlabel('Age')
+    plt.title("Patients\' ages Histogram")
+    plt.savefig("templates/static/cancerApp/img/age_chart.jpg")
+    plt.clf()
+    return HttpResponse("age Stats success!")
 
 
 def chunks(l, n):
@@ -369,7 +450,7 @@ def process_data(patient, labels_df, img_px_size=50, hm_slices=20, visualize=Fal
     label = labels_df.loc[labels_df['PatientID'] == patient]
 
     label = label['Label']
-    label = np.array(label);
+    label = np.array(label)
     label = label[0]
 
     seriries_id = os.listdir(data_dir + patient + '/')
@@ -445,7 +526,6 @@ def maxpool3d(x):
 
 def lungStructure(request):
     if request.method == 'POST':
-
         print("Lung")
         f = request.FILES['file']
         if os.path.isdir(data_dir):
@@ -480,3 +560,7 @@ def lungStructure(request):
         print('Done Plot_3d')
         return HttpResponse("Lung Structure")
 
+
+def clearHistory(request):
+    Statistics.objects.filter(username=request.user.username).delete()
+    return HttpResponse('History cleared!')

@@ -2,13 +2,19 @@
 {% block content %}
     {% load static %}
 {% if user.is_authenticated %}
-<div style="text-align:center">
-<button type="button" class="btn btn-success" id="btn-stats">Display Stats</button>
 
+<div class="main-div">
+    <button type="submit" id="h_clear" class="btn btn-success" style="float:right;margin:30px;">Clear History</button>
+<div class="statsBoxes">
+    <p style="font-weight:bold;text-decoration:underline">Choose the desired statistic(s)</p>
+    <input type="checkbox" id="cancer"> Cancerous patients stats<br>
+        <input type="checkbox" id="gender"> Male-Female stats<br>
+    <input type="checkbox" id="age"> Age stats<br>
 </div>
-<div style="text-align:center;margin-top:20px">
-    <img id="img" src=""/>
-</div>
+    </div>
+
+
+
 {% else %}
 <center>
 <p>sorry, you must log in to use this</p>

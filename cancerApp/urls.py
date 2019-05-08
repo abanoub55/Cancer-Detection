@@ -14,7 +14,10 @@ urlpatterns = [
     path('signup.html', views.SignUp.as_view(), name='signup'),
     path('ribVisualize', views.ribVisualize, name='visualShow'),
     path('lungStructure', views.lungStructure, name='visualLung'),
-    path('showStats', views.showStats, name='showStats'),
+    path('cancerStats', views.cancerStats, name='cancerStats'),
+    path('genderStats', views.genderStats, name='genderStats'),
+    path('ageStats', views.ageStats, name='ageStats'),
+    path('clearHistory', views.clearHistory, name='clearHistory'),
 ]
 
 

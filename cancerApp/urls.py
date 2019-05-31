@@ -3,18 +3,22 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.prediction, name='prediction'),
-    path('about.html', views.about, name='about'),
-    path('contact.html', views.contact, name='contact'),
+    path('about', views.about, name='about'),
+    path('contact', views.contact, name='contact'),
     path('base.html', views.base, name='base'),
-    path('diagnosis.html', views.diagnosis, name='diagnosis'),
-    path('visualization.html', views.visualize, name='visualize'),
-    path('stats.html', views.stats, name='stats'),
+    path('diagnosis', views.diagnosis, name='diagnosis'),
+    path('visualization', views.visualize, name='visualize'),
+    path('stats', views.stats, name='stats'),
     path('login', views.login, name='login'),
-    path('signup.html', views.SignUp.as_view(), name='signup'),
-    path('ribVisualize', views.ribVisualize, name='visualShow'),
-    path('lungStructure', views.lungStructure, name='visualLung'),
-    path('showStats', views.showStats, name='showStats'),
+    path('signup', views.SignUp.as_view(), name='signup'),
+    path('prediction', views.prediction),
+    path('visualizeRib', views.ribVisualize),
+    path('visualizeLung', views.lungStructure),
+    path('cancerStats', views.cancerStats),
+    path('genderStats', views.genderStats),
+    path('ageStats', views.ageStats),
+    path('infectionStats', views.infectionStats),
+    path('clearHistory', views.clearHistory),
 ]
 
 

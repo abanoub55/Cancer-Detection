@@ -10,6 +10,23 @@
     margin-right: auto;
 }
 
+.statsBoxes{
+float:left;
+clear:auto;
+margin-left:30px;
+border-style:solid;
+border-color:darkblue;
+padding:10px;
+}
+
+.min-height{
+min-height:850px;
+}
+
+.main-div img{
+float:left;
+}
+
 .login-line {
     margin-top:10px;
     margin-left:20px;

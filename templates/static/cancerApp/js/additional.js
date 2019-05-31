@@ -26,6 +26,8 @@ function () {
         }
     }
 
+
+
     // Upload Preview
     function readURL(input) {
         if (input.files && input.files[0]) {
@@ -70,7 +72,8 @@ function () {
             cache: false,
             processData: false,
             async: true,
-            url: '/predict',
+            url: 'prediction',
+            timeout:10000,
             success: function (data) {
                 // Get and display the result
                 $('.loader').hide();
@@ -87,43 +90,26 @@ function () {
                 }
                 console.log('Success!');
             },
+            error:function(){
+            $('.loader').hide();
+            alert("Error! something went wrong :(");
+            window.location.reload();
+            },
         });
     });
 
-
+    var radioID;
      // Visualization
+     $('input[type="radio"]').click(function(event){
+            radioID = event.target.id;
+            console.log(radioID);
+     });
+
     $('#btn-visualize').click(function () {
         var form_data = new FormData($('#upload-file')[0]);
-
-        form_data.append('image',$('#upload-file')[0])
-        // Show loading animation
-
-
-        // Make visualization by calling api /visualize
-        if(document.getElementById('visualizeLung').checked){
+        form_data.append('image',$('#upload-file')[0]);
+        if($('#'+radioID).prop("checked") == true){
         $('#btn-visualize').hide();
-    	$('.loader').show();
-        $.ajax({
-            type: 'POST',
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            async: true,
-            url: 'lungStructure',
-            success: function (data) {
-                // Get and display2 the result
-                $('.loader').hide();
-                $('#btn-visualize').show();
-                $('#result').fadeIn(600);
-                $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
-                console.log('Lung Structure!');
-            },
-        });
-  //  });
-    }
-    else if(document.getElementById('visualizeRib').checked){
-      	$('#btn-visualize').hide();
         $('.loader').show();
         $.ajax({
             type: 'POST',
@@ -132,22 +118,25 @@ function () {
             cache: false,
             processData: false,
             async: true,
-            url: 'ribVisualize',
+            url: radioID,
             success: function (data) {
                 // Get and display2 the result
                 $('.loader').hide();
                 $('#btn-visualize').show();
                 $('#result').fadeIn(600);
                 $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
-                console.log("Rib Visulization");
+                console.log(id);
+            },
+            error:function(){
+            $('.loader').hide();
+            alert("Error! something went wrong :(");
+            window.location.reload();
             },
         });
-    }
-    else {
-    	//$('.loader').hide();
-    	window.alert("No option was specified!")
+        }else{
+            alert('Error! No option specified')
+        }
 
-    };
     });
 
     //Make Statistics
@@ -156,16 +145,6 @@ function () {
             img_dest = id+'_chart.jpg';
             div_id = id+"-div";
             img_id = id+"-img";
-            var idUrl;
-            if(id === 'cancer'){
-                idUrl='cancerStats';
-            }
-            else if(id === 'gender'){
-                idUrl = 'genderStats';
-            }
-            else if(id === 'age'){
-                idUrl = 'ageStats';
-            }
             if($(this).prop("checked") == true){
             $.ajax({
             type: 'GET',
@@ -173,7 +152,7 @@ function () {
             cache: false,
             processData: false,
             async: true,
-            url: idUrl,
+            url: id+'Stats',
             success: function (data) {
             if(data == "user has no activity yet"){$('#'+div_id).hide();$('#'+id).prop("checked",false);window.alert(data);}
            else{

@@ -40,6 +40,10 @@ batch_size = 10
 keep_rate = 0.9
 
 
+# functions used for rendering pages each with its name (viewing them in html pages)
+
+
+##########################################################
 def index(request):
     return render(request, 'index.html')
 
@@ -78,11 +82,17 @@ class SignUp(generic.CreateView):
     template_name = 'signup.html'
 
 
+##################################################################
+
+# this function is fired from ajax in front-end to get prediction results
+# and print them on the screen
+
 def prediction(request):
     if request.method == 'POST':
-
         f = request.FILES['file']
         pid = str(f).split('.')[0]
+        if not os.path.isdir("project_data"):
+            os.mkdir("project_data")
         if os.path.isdir(data_dir):
             shutil.rmtree(data_dir)
             print("folder deleted!!")
@@ -92,67 +102,23 @@ def prediction(request):
         with zipfile.ZipFile(f, 'r') as zip_ref:
             zip_ref.extractall(data_dir)
             print('extracted successfully!!')
-        prepareImage()
-        much_data = np.load("much_data.npy")
+        #prepareImage()
+        #much_data = np.load("much_data.npy")
         pred_x = np.array([])
-        try:
-            for data in much_data:
-                pred_x = data[0]
-        except Exception:
-            pass
+        # print("data size = ", len(much_data))
+        # try:
+        #     for data in much_data:
+        #         pred_x = data[0]
+        # except Exception:
+        #     pass
         tf.reset_default_graph()
         pred_x = np.reshape(pred_x, [-1, IMG_PX_SIZE, IMG_PX_SIZE, HM_SLICES, 1])
         x = tf.placeholder('float')
-        weights = {'W_conv1': tf.Variable(tf.random_normal([3, 3, 3, 1, 32])),
-                   #       5 x 5 x 5 patches, 32 channels, 64 features to compute.
-                   'W_conv2': tf.Variable(tf.random_normal([3, 3, 3, 32, 64])),
-                   #                                  64 features
-                   'W_conv3': tf.Variable(tf.random_normal([3, 3, 3, 64, 32])),
-
-                   'W_conv4': tf.Variable(tf.random_normal([3, 3, 3, 32, 128])),
-
-                   'W_fc': tf.Variable(tf.random_normal([9600, 1024])),
-                   'W_fc2': tf.Variable(tf.random_normal([1024, 512])),
-
-                   'out': tf.Variable(tf.random_normal([512, n_classes]))}
-
-        biases = {'b_conv1': tf.Variable(tf.random_normal([32])),
-                  'b_conv2': tf.Variable(tf.random_normal([64])),
-                  'b_conv3': tf.Variable(tf.random_normal([32])),
-                  'b_conv4': tf.Variable(tf.random_normal([128])),
-
-                  'b_fc': tf.Variable(tf.random_normal([1024])),
-                  'b_fc2': tf.Variable(tf.random_normal([512])),
-                  'out': tf.Variable(tf.random_normal([n_classes]))}
+        weights, biases = defineCnn()
         saver = tf.train.Saver()
-
         with tf.Session() as sess:
             saver.restore(sess, home_dir + 'savedModel')
-            #                            image X      image Y        image Z
-
-            x = tf.reshape(x, shape=[-1, IMG_PX_SIZE, IMG_PX_SIZE, HM_SLICES, 1])
-
-            conv1 = tf.nn.relu(conv3d(x, weights['W_conv1']) + biases['b_conv1'])
-            conv1 = maxpool3d(conv1)
-
-            conv2 = tf.nn.relu(conv3d(conv1, weights['W_conv2']) + biases['b_conv2'])
-            conv2 = maxpool3d(conv2)
-
-            conv3 = tf.nn.relu(conv3d(conv2, weights['W_conv3']) + biases['b_conv3'])
-            conv3 = maxpool3d(conv3)
-
-            conv4 = tf.nn.relu(conv3d(conv3, weights['W_conv4']) + biases['b_conv4'])
-            conv4 = maxpool3d(conv4)
-
-            fc = tf.reshape(conv4, [-1, 9600])
-            fc = tf.nn.relu(tf.matmul(fc, weights['W_fc']) + biases['b_fc'])
-
-            fc2 = tf.nn.relu(tf.matmul(fc, weights['W_fc2']) + biases['b_fc2'])
-            # fc2 = tf.nn.dropout(fc2, keep_rate)
-
-            output = tf.matmul(fc2, weights['out']) + biases['out']
-
-            result = sess.run(tf.argmax(output, 1)[0], feed_dict={x: pred_x})
+            result = feedForward(x, weights, biases, pred_x)
             if len(Statistics.objects.filter(patient_id=pid, username=request.user.username)) == 0:
                 stat = Statistics()
                 stat.username = request.user.username
@@ -162,6 +128,7 @@ def prediction(request):
                 else:
                     stat.label = "Cancer"
                 stat.save()
+
             if result == 0:
                 return HttpResponse('patient is healthy')
             elif result == 1:
@@ -171,132 +138,221 @@ def prediction(request):
                 return HttpResponse('unknown result')
 
 
-def cancerStats(request):
-    labels = ['cancer', 'non-cancer']
-    cancer = Statistics.objects.filter(username=request.user.username, label="Cancer")
-    nocancer = Statistics.objects.filter(username=request.user.username, label="Nocancer")
+#####################################################################
+# preprocessing the incoming patient images before making prediction
+#####################################################################
 
-    values = [len(cancer), len(nocancer)]
-    if len(cancer) == 0 and len(nocancer) == 0:
-        return HttpResponse("user has no activity yet")
-    fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+def process_data(patient, labels_df, img_px_size=50, hm_slices=20, visualize=False):
+    label = labels_df.loc[labels_df['PatientID'] == patient]
 
-    def func(pct, allvals):
-        absolute = int(pct / 100. * np.sum(allvals))
-        return "{:.1f}%".format(pct, absolute)
+    label = label['Label']
+    label = np.array(label)
+    label = label[0]
 
-    wedges, texts, autotexts = ax.pie(values, autopct=lambda pct: func(pct, values),
-                                      textprops=dict(color="w"))
+    seriries_id = os.listdir(data_dir + patient + '/')
 
-    ax.legend(wedges, labels,
-              title="labels",
-              loc="center left",
-              bbox_to_anchor=(1, 0, 0.5, 1))
+    path = data_dir + patient + '/' + seriries_id[0]
 
-    plt.setp(autotexts, size=8, weight="bold")
+    slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
 
-    ax.set_title("Cancer stats")
-    plt.savefig("templates/static/cancerApp/img/cancer_chart.jpg")
-    plt.clf()
-    return HttpResponse("stats are ready!")
+    slices.sort(key=lambda x: int(x.SliceLocation))
 
+    new_slices = []
 
-def isFound(el, listt):
-    i = 0
-    while i < len(listt):
+    slices = [cv2.resize(np.array(each_slice.pixel_array), (IMG_PX_SIZE, IMG_PX_SIZE)) for each_slice in slices]
 
-        if el == listt[i]:
-            return i
-        i += 1
-    return -1
+    # ******************************To Make Slices Devisable by X***************
 
+    sizeOfSlices = len(slices)
 
-def genderStats(request):
-    patients = Statistics.objects.filter(username=request.user.username)
-    p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
-    global labels
-    all_genders = labels['Gender']
-    all_p_ids = labels['PatientID']
-    genders = []
-    i = 0
-    for p_id in p_ids:
-        print("im in!")
-        print("p_id = " + p_id)
-        ind = isFound(p_id, all_p_ids)
-        if (ind != -1):
-            print("found one!")
-            print("all_genders[i] = " + all_genders[ind])
-            genders.append(all_genders[ind])
-        i += 1
+    # **************************************************************************
+    # ------------------NEW---------------------------------
+    subSample_factor = np.floor(sizeOfSlices / HM_SLICES)
+    slice_index = 0
+    # ------------------NEW---------------------------------
 
-    fig_labels = ['Male', 'Female']
-    males = [i for i in genders if i == 'Male']
-    females = [i for i in genders if i == 'Female']
-    values = [len(males), len(females)]
-    if len(males) == 0 and len(females) == 0:
-        return HttpResponse("user has no activity yet")
-    fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+    for i in range(0, HM_SLICES):
+        new_slices.append(slices[slice_index])
+        slice_index += subSample_factor
+        slice_index = int(slice_index)
 
-    def func(pct, allvals):
-        absolute = int(pct / 100. * np.sum(allvals))
-        return "{:.1f}%".format(pct, absolute)
+    if visualize:
+        fig = plt.figure()
+        for num, each_slice in enumerate(new_slices):
+            y = fig.add_subplot(4, 5, num + 1)
+            y.imshow(each_slice, cmap='gray')
+        plt.show()
 
-    theme = plt.get_cmap('copper')
-    ax.set_prop_cycle("color", [theme(1. * i / 2) for i in range(3)])
-    wedges, texts, autotexts = ax.pie(values, autopct=lambda pct: func(pct, values),
-                                      textprops=dict(color="W"))
+    # print('LABEL___: ',label)
+    if label == 1:
+        label = np.array([0, 1])
+    elif label == 0:
+        label = np.array([1, 0])
 
-    ax.legend(wedges, fig_labels,
-              title="labels",
-              loc="center left",
-              bbox_to_anchor=(1, 0, 0.5, 1))
-
-    plt.setp(autotexts, size=8, weight="bold")
-    ax.set_title("Gender stats")
-    plt.savefig("templates/static/cancerApp/img/gender_chart.jpg")
-    plt.clf()
-    return HttpResponse("gender Stats success!")
+    return np.array(new_slices), label
 
 
-def ageStats(request):
-    patients = Statistics.objects.filter(username=request.user.username)
-    p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
-    global labels
-    all_ages = labels['Age']
-    all_p_ids = labels['PatientID']
-    ages = []
-    i = 0
-    for p_id in p_ids:
-        ind = isFound(p_id, all_p_ids)
-        if ind != -1:
-            ages.append(all_ages[ind])
-        i += 1
+def prepareImage():
+    patients = os.listdir(data_dir)
 
-    bins = range(0, 120, 20)
-    if len(ages) == 0:
-        return HttpResponse("user has no activity yet")
-    plt.hist(ages, bins=bins)
-    plt.ylabel('Frequency')
-    plt.xlabel('Age')
-    plt.title("Patients\' ages Histogram")
-    plt.savefig("templates/static/cancerApp/img/age_chart.jpg")
-    plt.clf()
-    return HttpResponse("age Stats success!")
+    much_data = []
+
+    for patient in tqdm(patients[0:20]):
+        # if num % 10 == 0:
+        #     print(num)
+        try:
+            img_data, label = process_data(patient, labels, img_px_size=IMG_PX_SIZE, hm_slices=HM_SLICES)
+            # print(img_data.shape,label)
+            much_data.append([img_data, label])
+        except KeyError as e:
+
+            print('This is unlabeled data!')
+
+    np.save("much_data.npy", much_data)
 
 
-def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
+#############################
+# model preparation functions
+############################
+
+def feedForward(x, weights, biases, pred_x):
+    #                            image X      image Y        image Z
+    x = tf.reshape(x, shape=[-1, IMG_PX_SIZE, IMG_PX_SIZE, HM_SLICES, 1])
+
+    conv1 = tf.nn.relu(conv3d(x, weights['W_conv1']) + biases['b_conv1'])
+    conv1 = maxpool3d(conv1)
+
+    conv2 = tf.nn.relu(conv3d(conv1, weights['W_conv2']) + biases['b_conv2'])
+    conv2 = maxpool3d(conv2)
+
+    conv3 = tf.nn.relu(conv3d(conv2, weights['W_conv3']) + biases['b_conv3'])
+    conv3 = maxpool3d(conv3)
+
+    conv4 = tf.nn.relu(conv3d(conv3, weights['W_conv4']) + biases['b_conv4'])
+    conv4 = maxpool3d(conv4)
+
+    fc = tf.reshape(conv4, [-1, 9600])
+    fc = tf.nn.relu(tf.matmul(fc, weights['W_fc']) + biases['b_fc'])
+    fc2 = tf.nn.relu(tf.matmul(fc, weights['W_fc2']) + biases['b_fc2'])
+    # fc2 = tf.nn.dropout(fc2, keep_rate)
+
+    output = tf.matmul(fc2, weights['out']) + biases['out']
+
+    result = sess.run(tf.argmax(output, 1)[0], feed_dict={x: pred_x})
+
+    return result
+
+def defineCnn():
+    weights = {'W_conv1': tf.Variable(tf.random_normal([3, 3, 3, 1, 32])),
+               #       5 x 5 x 5 patches, 32 channels, 64 features to compute.
+               'W_conv2': tf.Variable(tf.random_normal([3, 3, 3, 32, 64])),
+               #                                  64 features
+               'W_conv3': tf.Variable(tf.random_normal([3, 3, 3, 64, 32])),
+
+               'W_conv4': tf.Variable(tf.random_normal([3, 3, 3, 32, 128])),
+
+               'W_fc': tf.Variable(tf.random_normal([9600, 1024])),
+               'W_fc2': tf.Variable(tf.random_normal([1024, 512])),
+
+               'out': tf.Variable(tf.random_normal([512, n_classes]))}
+
+    biases = {'b_conv1': tf.Variable(tf.random_normal([32])),
+              'b_conv2': tf.Variable(tf.random_normal([64])),
+              'b_conv3': tf.Variable(tf.random_normal([32])),
+              'b_conv4': tf.Variable(tf.random_normal([128])),
+
+              'b_fc': tf.Variable(tf.random_normal([1024])),
+              'b_fc2': tf.Variable(tf.random_normal([512])),
+              'out': tf.Variable(tf.random_normal([n_classes]))}
+
+    return weights,biases
+
+def conv3d(x, W):
+    return tf.nn.conv3d(x, W, strides=[1, 1, 1, 1, 1], padding='SAME')
 
 
-def med(l):
-    return sum(l) / len(l)
+def maxpool3d(x):
+    #                        size of window         movement of window as you slide about
+    return tf.nn.max_pool3d(x, ksize=[1, 2, 2, 2, 1], strides=[1, 2, 2, 2, 1], padding='SAME')
+
+
+##############################################################
+# visualization functions fired from front-end (rib structure-lung structure)
+##############################################################
+
+
+def ribVisualize(request):
+    if request.method == 'POST':
+        print("Rib")
+        f = request.FILES['file']
+        if os.path.isdir(data_dir):
+            shutil.rmtree(data_dir)
+            print("folder deleted!!")
+        else:
+            os.mkdir(data_dir)
+            print('folder created!!')
+        with zipfile.ZipFile(f, 'r') as zip_ref:
+            zip_ref.extractall(data_dir)
+            print('extracted successfully!!')
+        patient = os.listdir(data_dir)[0]
+        seriries_id = os.listdir(data_dir + patient + '/')
+
+        path = data_dir + patient + '/' + seriries_id[0]
+        print(path)
+
+        slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
+
+        slices.sort(key=lambda x: int(x.ImagePositionPatient[2]))
+
+        image_o = get_pixels_hu(slices)
+        print('Done HU')
+        pix_resampled = resample(image_o, slices)
+        print('Done Resample')
+
+        plot_3d(pix_resampled, 400)
+        print('Done Plot_3d')
+        return HttpResponse("Rib Structure")
+
+
+def lungStructure(request):
+    if request.method == 'POST':
+        f = request.FILES['file']
+        if os.path.isdir(data_dir):
+            shutil.rmtree(data_dir)
+        else:
+            os.mkdir(data_dir)
+        with zipfile.ZipFile(f, 'r') as zip_ref:
+            zip_ref.extractall(data_dir)
+        patient = os.listdir(data_dir)[0]
+        seriries_id = os.listdir(data_dir + patient + '/')
+
+        path = data_dir + patient + '/' + seriries_id[0]
+        slices = []
+
+        slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
+
+        slices.sort(key=lambda x: int(x.ImagePositionPatient[2]))
+
+        image_o = get_pixels_hu(slices)
+        print('Done HU')
+        pix_resampled = resample(image_o, slices)
+        print('Done Resample')
+        segmented_lungs = segment_lung_mask(pix_resampled, True)
+        print('Done Segment')
+
+        plot_3d(segmented_lungs, 0)
+        print('Done Plot_3d')
+        return HttpResponse("Lung Structure")
+
+
+##########################################################
+# visualization preprocessing functions and plotting
+##########################################################
 
 
 def get_pixels_hu(slices):
     image = np.stack([s.pixel_array for s in slices])
-    # Convert to int16 (from sometimes int16), 
+    # Convert to int16 (from sometimes int16),
     # should be possible as values should always be low enough (<32k)
     image = image.astype(np.int16)
 
@@ -381,14 +437,14 @@ def segment_lung_mask(image, fill_lung_structures=True):
 
     # Pick the pixel in the very corner to determine which label is air.
     #   Improvement: Pick multiple background labels from around the patient
-    #   More resistant to "trays" on which the patient lays cutting the air 
+    #   More resistant to "trays" on which the patient lays cutting the air
     #   around the person in half
     background_label = labels[0, 0, 0]
 
     # Fill the air around the person
     binary_image[background_label == labels] = 2
 
-    # Method of filling the lung structures (that is superior to something like 
+    # Method of filling the lung structures (that is superior to something like
     # morphological closing)
     if fill_lung_structures:
         # For every slice we determine the largest solid structure
@@ -412,155 +468,147 @@ def segment_lung_mask(image, fill_lung_structures=True):
     return binary_image
 
 
-def ribVisualize(request):
-    if request.method == 'POST':
 
-        print("Rib")
-        f = request.FILES['file']
-        if os.path.isdir(data_dir):
-            shutil.rmtree(data_dir)
-            print("folder deleted!!")
-        else:
-            os.mkdir(data_dir)
-            print('folder created!!')
-        with zipfile.ZipFile(f, 'r') as zip_ref:
-            zip_ref.extractall(data_dir)
-            print('extracted successfully!!')
-        patient = os.listdir(data_dir)[0]
-        seriries_id = os.listdir(data_dir + patient + '/')
+##################################################################
+# statistics related functions (cancer-gender-age)
+##################################################################
 
-        path = data_dir + patient + '/' + seriries_id[0]
-        print(path)
+# stats for cancer
+def cancerStats(request):
+    labels = ['cancer', 'non-cancer']
+    cancer = Statistics.objects.filter(username=request.user.username, label="Cancer")
+    nocancer = Statistics.objects.filter(username=request.user.username, label="Nocancer")
 
-        slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
+    values = [len(cancer), len(nocancer)]
+    if len(cancer) == 0 and len(nocancer) == 0:
+        return HttpResponse("user has no activity yet")
+    fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
 
-        slices.sort(key=lambda x: int(x.ImagePositionPatient[2]))
+    def func(pct, allvals):
+        absolute = int(pct / 100. * np.sum(allvals))
+        return "{:.1f}%".format(pct, absolute)
 
-        image_o = get_pixels_hu(slices);
-        print('Done HU')
-        pix_resampled = resample(image_o, slices)
-        print('Done Resample')
+    wedges, texts, autotexts = ax.pie(values, autopct=lambda pct: func(pct, values),
+                                      textprops=dict(color="w"))
 
-        plot_3d(pix_resampled, 400)
-        print('Done Plot_3d')
-        return HttpResponse("Rib Structure")
+    ax.legend(wedges, labels,
+              title="labels",
+              loc="center left",
+              bbox_to_anchor=(1, 0, 0.5, 1))
 
+    plt.setp(autotexts, size=8, weight="bold")
 
-def process_data(patient, labels_df, img_px_size=50, hm_slices=20, visualize=False):
-    label = labels_df.loc[labels_df['PatientID'] == patient]
-
-    label = label['Label']
-    label = np.array(label)
-    label = label[0]
-
-    seriries_id = os.listdir(data_dir + patient + '/')
-
-    path = data_dir + patient + '/' + seriries_id[0]
-
-    slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
-
-    slices.sort(key=lambda x: int(x.SliceLocation))
-
-    new_slices = []
-
-    slices = [cv2.resize(np.array(each_slice.pixel_array), (IMG_PX_SIZE, IMG_PX_SIZE)) for each_slice in slices]
-
-    # ******************************To Make Slices Devisable by X***************
-
-    sizeOfSlices = len(slices)
-
-    # **************************************************************************
-    # ------------------NEW---------------------------------
-    subSample_factor = np.floor(sizeOfSlices / HM_SLICES)
-    slice_index = 0
-    # ------------------NEW---------------------------------
-
-    for i in range(0, HM_SLICES):
-        new_slices.append(slices[slice_index])
-        slice_index += subSample_factor
-        slice_index = int(slice_index)
-
-    if visualize:
-        fig = plt.figure()
-        for num, each_slice in enumerate(new_slices):
-            y = fig.add_subplot(4, 5, num + 1)
-            y.imshow(each_slice, cmap='gray')
-        plt.show()
-
-    # print('LABEL___: ',label)
-    if label == 1:
-        label = np.array([0, 1])
-    elif label == 0:
-        label = np.array([1, 0])
-
-    return np.array(new_slices), label
+    ax.set_title("Cancer stats")
+    plt.savefig("templates/static/cancerApp/img/cancer_chart.jpg")
+    plt.clf()
+    return HttpResponse("stats are ready!")
 
 
-def prepareImage():
-    patients = os.listdir(data_dir)
+# checks if an element is in a list
+def isFound(el, listt):
+    i = 0
+    while i < len(listt):
 
-    much_data = []
-
-    for patient in tqdm(patients[0:20]):
-        # if num % 10 == 0:
-        #     print(num)
-        try:
-            img_data, label = process_data(patient, labels, img_px_size=IMG_PX_SIZE, hm_slices=HM_SLICES)
-            # print(img_data.shape,label)
-            much_data.append([img_data, label])
-        except KeyError as e:
-
-            print('This is unlabeled data!')
-
-    np.save("much_data.npy", much_data);
+        if el == listt[i]:
+            return i
+        i += 1
+    return -1
 
 
-def conv3d(x, W):
-    return tf.nn.conv3d(x, W, strides=[1, 1, 1, 1, 1], padding='SAME')
+# stats for gender
+def genderStats(request):
+    patients = Statistics.objects.filter(username=request.user.username)
+    p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
+    global labels
+    all_genders = labels['Gender']
+    all_p_ids = labels['PatientID']
+    genders = []
+    i = 0
+    for p_id in p_ids:
+        print("im in!")
+        print("p_id = " + p_id)
+        ind = isFound(p_id, all_p_ids)
+        if (ind != -1):
+            print("found one!")
+            print("all_genders[i] = " + all_genders[ind])
+            genders.append(all_genders[ind])
+        i += 1
+
+    fig_labels = ['Male', 'Female']
+    males = [i for i in genders if i == 'Male']
+    females = [i for i in genders if i == 'Female']
+    values = [len(males), len(females)]
+    if len(males) == 0 and len(females) == 0:
+        return HttpResponse("user has no activity yet")
+    fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+
+    def func(pct, allvals):
+        absolute = int(pct / 100. * np.sum(allvals))
+        return "{:.1f}%".format(pct, absolute)
+
+    theme = plt.get_cmap('copper')
+    ax.set_prop_cycle("color", [theme(1. * i / 2) for i in range(3)])
+    wedges, texts, autotexts = ax.pie(values, autopct=lambda pct: func(pct, values),
+                                      textprops=dict(color="W"))
+
+    ax.legend(wedges, fig_labels,
+              title="labels",
+              loc="center left",
+              bbox_to_anchor=(1, 0, 0.5, 1))
+
+    plt.setp(autotexts, size=8, weight="bold")
+    ax.set_title("Gender stats")
+    plt.savefig("templates/static/cancerApp/img/gender_chart.jpg")
+    plt.clf()
+    return HttpResponse("gender Stats success!")
 
 
-def maxpool3d(x):
-    #                        size of window         movement of window as you slide about
-    return tf.nn.max_pool3d(x, ksize=[1, 2, 2, 2, 1], strides=[1, 2, 2, 2, 1], padding='SAME')
+# stats for age
+def ageStats(request):
+    patients = Statistics.objects.filter(username=request.user.username)
+    p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
+    global labels
+    all_ages = labels['Age']
+    all_p_ids = labels['PatientID']
+    ages = []
+    i = 0
+    for p_id in p_ids:
+        ind = isFound(p_id, all_p_ids)
+        if ind != -1:
+            ages.append(all_ages[ind])
+        i += 1
+
+    bins = range(0, 120, 20)
+    if len(ages) == 0:
+        return HttpResponse("user has no activity yet")
+    plt.hist(ages, bins=bins)
+    plt.ylabel('Frequency')
+    plt.xlabel('Age')
+    plt.title("Patients\' ages Histogram")
+    plt.savefig("templates/static/cancerApp/img/age_chart.jpg")
+    plt.clf()
+    return HttpResponse("age Stats success!")
 
 
-def lungStructure(request):
-    if request.method == 'POST':
-        print("Lung")
-        f = request.FILES['file']
-        if os.path.isdir(data_dir):
-            shutil.rmtree(data_dir)
-            print("folder deleted!!")
-        else:
-            os.mkdir(data_dir)
-            print('folder created!!')
-        with zipfile.ZipFile(f, 'r') as zip_ref:
-            zip_ref.extractall(data_dir)
-            print('extracted successfully!!')
-        patient = os.listdir(data_dir)[0]
-        seriries_id = os.listdir(data_dir + patient + '/')
+def infectionStats(request):
+    return HttpResponse("user has no activity yet")
 
-        path = data_dir + patient + '/' + seriries_id[0]
-        print(path)
-
-        slices = []
-
-        slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
-
-        slices.sort(key=lambda x: int(x.ImagePositionPatient[2]))
-
-        image_o = get_pixels_hu(slices);
-        print('Done HU')
-        pix_resampled = resample(image_o, slices)
-        print('Done Resample')
-        segmented_lungs = segment_lung_mask(pix_resampled, True)
-        print('Done Segment')
-
-        plot_3d(segmented_lungs, 0)
-        print('Done Plot_3d')
-        return HttpResponse("Lung Structure")
-
-
+# clears all statistics records for the current user
 def clearHistory(request):
     Statistics.objects.filter(username=request.user.username).delete()
     return HttpResponse('History cleared!')
+
+
+
+###############################
+# not used functions
+###############################
+
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+
+def med(l):
+    return sum(l) / len(l)

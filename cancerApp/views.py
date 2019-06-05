@@ -1,28 +1,30 @@
-import os
 import shutil
 import zipfile
-import cv2
-import matplotlib.pyplot as plt
-import numpy as np
-import \
-    pandas as pd  # for some simple data analysis (right now, just to load in the labels data and quickly reference it)
 import pydicom  # for reading dicom files
-import tensorflow as tf
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
-from tqdm import tqdm
 from .forms import CustomUserCreationForm
 import scipy.ndimage
-from skimage import measure, morphology
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from .models import Statistics
-from tqdm import tqdm
-import os
 import scipy.ndimage
-from skimage import measure, morphology
+import pandas as pd  # for some simple data analysis (right now, just to load in the labels data and quickly reference it)
+from tqdm import tqdm
+import cv2
+import numpy as np
+import tensorflow as tf
+import os
+from skimage.morphology import ball, disk, dilation, binary_erosion, remove_small_objects, erosion, closing, reconstruction, binary_closing
+from skimage.measure import label,regionprops, perimeter
+from skimage.morphology import binary_dilation, binary_opening
+from skimage.filters import roberts, sobel
+from skimage import measure, feature
+from skimage.segmentation import clear_border
+from scipy import ndimage as ndi
+import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+import scipy.misc
 
 # Create your views here.
 home_dir = 'project_data/'
@@ -102,23 +104,17 @@ def prediction(request):
         with zipfile.ZipFile(f, 'r') as zip_ref:
             zip_ref.extractall(data_dir)
             print('extracted successfully!!')
-        #prepareImage()
-        #much_data = np.load("much_data.npy")
-        pred_x = np.array([])
-        # print("data size = ", len(much_data))
-        # try:
-        #     for data in much_data:
-        #         pred_x = data[0]
-        # except Exception:
-        #     pass
+        prepareImage()
+        much_data = np.load("much_data.npy", allow_pickle=True)
+        pred_x = np.array(much_data[0][0])
         tf.reset_default_graph()
         pred_x = np.reshape(pred_x, [-1, IMG_PX_SIZE, IMG_PX_SIZE, HM_SLICES, 1])
         x = tf.placeholder('float')
         weights, biases = defineCnn()
         saver = tf.train.Saver()
         with tf.Session() as sess:
-            saver.restore(sess, home_dir + 'savedModel')
-            result = feedForward(x, weights, biases, pred_x)
+            saver.restore(save_path=home_dir + 'savedModel')
+            result = feedForward(x, weights, biases, pred_x,sess)
             if len(Statistics.objects.filter(patient_id=pid, username=request.user.username)) == 0:
                 stat = Statistics()
                 stat.username = request.user.username
@@ -128,7 +124,6 @@ def prediction(request):
                 else:
                     stat.label = "Cancer"
                 stat.save()
-
             if result == 0:
                 return HttpResponse('patient is healthy')
             elif result == 1:
@@ -215,7 +210,8 @@ def prepareImage():
 # model preparation functions
 ############################
 
-def feedForward(x, weights, biases, pred_x):
+def feedForward(x, weights, biases, pred_x,sess):
+
     #                            image X      image Y        image Z
     x = tf.reshape(x, shape=[-1, IMG_PX_SIZE, IMG_PX_SIZE, HM_SLICES, 1])
 
@@ -345,6 +341,61 @@ def lungStructure(request):
         return HttpResponse("Lung Structure")
 
 
+def cancer_spread(request):
+    if request.method == 'POST':
+        f = request.FILES['file']
+        if os.path.isdir(data_dir):
+            shutil.rmtree(data_dir)
+        else:
+            os.mkdir(data_dir)
+        with zipfile.ZipFile(f, 'r') as zip_ref:
+            zip_ref.extractall(data_dir)
+        patient = os.listdir(data_dir)[0]
+        seriries_id = os.listdir(data_dir + patient + '/')
+        lbls = labels['Label']
+        index = getIndex(patient)
+        if lbls[index] == 1:
+            path = data_dir + patient + '/' + seriries_id[0]
+            slices = read_ct_scan(path)
+
+            segmented_ct_scan = segment_lung_from_ct_scan(slices)
+            segmented_ct_scan[segmented_ct_scan < 604] = 0
+            # from morphology
+            selem = ball(2)
+            binary = binary_closing(segmented_ct_scan, selem)
+
+            label_scan = label(binary)
+
+            areas = [r.area for r in regionprops(label_scan)]
+            areas.sort()
+
+            for r in regionprops(label_scan):
+                max_x, max_y, max_z = 0, 0, 0
+                min_x, min_y, min_z = 1000, 1000, 1000
+
+                for c in r.coords:
+                    max_z = max(c[0], max_z)
+                    max_y = max(c[1], max_y)
+                    max_x = max(c[2], max_x)
+
+                    min_z = min(c[0], min_z)
+                    min_y = min(c[1], min_y)
+                    min_x = min(c[2], min_x)
+                if (min_z == max_z or min_y == max_y or min_x == max_x or r.area > areas[-3]):
+                    for c in r.coords:
+                        segmented_ct_scan[c[0], c[1], c[2]] = 0
+                else:
+                    index = (max((max_x - min_x), (max_y - min_y), (max_z - min_z))) / (
+                        min((max_x - min_x), (max_y - min_y), (max_z - min_z)))
+
+            plot_3d(segmented_ct_scan, 604)
+            return HttpResponse('cancerSpread')
+        else:
+            return HttpResponse('healthy')
+
+
+
+
 ##########################################################
 # visualization preprocessing functions and plotting
 ##########################################################
@@ -413,8 +464,9 @@ def plot_3d(image, threshold=-300):
     ax.set_xlim(0, p.shape[0])
     ax.set_ylim(0, p.shape[1])
     ax.set_zlim(0, p.shape[2])
-
     plt.savefig('templates/static/cancerApp/img/lungfig.jpg')
+    plt.clf()
+
 
 
 def largest_label_volume(im, bg=-1):
@@ -467,7 +519,117 @@ def segment_lung_mask(image, fill_lung_structures=True):
 
     return binary_image
 
+def get_segmented_lungs(im, plot=False):
+    '''
+    This funtion segments the lungs from the given 2D slice.
+    '''
+    if plot == True:
+        f, plots = plt.subplots(8, 1, figsize=(5, 40))
+    '''
+    Step 1: Convert into a binary image. 
+    '''
+    binary = im < 604
 
+    if plot == True:
+        plots[0].axis('off')
+        plots[0].imshow(binary, cmap=plt.cm.bone)
+    '''
+    Step 2: Remove the blobs connected to the border of the image.
+    '''
+    #from segmentation
+    cleared = clear_border(binary)
+    if plot == True:
+        plots[1].axis('off')
+        plots[1].imshow(cleared, cmap=plt.cm.bone)
+    '''
+    Step 3: Label the image.
+    '''
+    label_image = label(cleared)
+    if plot == True:
+        plots[2].axis('off')
+        plots[2].imshow(label_image, cmap=plt.cm.bone)
+    '''
+    Step 4: Keep the labels with 2 largest areas.
+    '''
+    areas = [r.area for r in regionprops(label_image)]
+    areas.sort()
+    if len(areas) > 2:
+        for region in regionprops(label_image):
+            if region.area < areas[-2]:
+                for coordinates in region.coords:
+                    label_image[coordinates[0], coordinates[1]] = 0
+    binary = label_image > 0
+    if plot == True:
+        plots[3].axis('off')
+        plots[3].imshow(binary, cmap=plt.cm.bone)
+    '''
+    Step 5: Erosion operation with a disk of radius 2. This operation is 
+    seperate the lung nodules attached to the blood vessels.
+    '''
+    selem = disk(2)
+    #from morphology
+    binary = binary_erosion(binary, selem)
+    if plot == True:
+        plots[4].axis('off')
+        plots[4].imshow(binary, cmap=plt.cm.bone)
+    '''
+    Step 6: Closure operation with a disk of radius 10. This operation is 
+    to keep nodules attached to the lung wall.
+    '''
+    selem = disk(10)
+    binary = binary_closing(binary, selem)
+    if plot == True:
+        plots[5].axis('off')
+        plots[5].imshow(binary, cmap=plt.cm.bone)
+    '''
+    Step 7: Fill in the small holes inside the binary mask of lungs.
+    '''
+    edges = roberts(binary)
+    binary = ndi.binary_fill_holes(edges)
+    if plot == True:
+        plots[6].axis('off')
+        plots[6].imshow(binary, cmap=plt.cm.bone)
+    '''
+    Step 8: Superimpose the binary mask on the input image.
+    '''
+    get_high_vals = binary == 0
+    im[get_high_vals] = 0
+    if plot == True:
+        plots[7].axis('off')
+        plots[7].imshow(im, cmap=plt.cm.bone)
+
+    return im
+
+
+
+def segment_lung_from_ct_scan(ct_scan):
+    return np.asarray([get_segmented_lungs(slice) for slice in ct_scan])
+
+
+def read_ct_scan(folder_name):
+    # Read the slices from the dicom file
+    slices = [pydicom.read_file(folder_name + '/' + filename) for filename in os.listdir(folder_name)];
+
+    # Sort the dicom slices in their respective order
+    slices.sort(key=lambda x: int(x.InstanceNumber));
+    slices = np.stack(
+        [cv2.resize(np.array(each_slice.pixel_array), (IMG_PX_SIZE, IMG_PX_SIZE)) for each_slice in slices])
+
+    # Get the pixel values for all the slices
+    # slices = np.stack([s.pixel_array for s in slices]);
+    slices[slices == -2000] = 0;
+    return slices
+
+def getIndex(pid):
+    i = len(pid)-1
+    str =''
+    while i >= 0:
+        if pid[i] != '0':
+            str = pid[i] +str
+        else:
+            break
+        i -=1
+    return int(str)-1
 
 ##################################################################
 # statistics related functions (cancer-gender-age)
@@ -612,3 +774,4 @@ def chunks(l, n):
 
 def med(l):
     return sum(l) / len(l)
+

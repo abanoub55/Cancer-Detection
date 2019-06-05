@@ -631,7 +631,7 @@ def getIndex(pid):
             str = pid[i] +str
         else:
             break
-        i -=1
+        i -= 1
     return int(str)-1
 
 ##################################################################

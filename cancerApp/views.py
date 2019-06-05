@@ -157,7 +157,7 @@ def process_data(patient, labels_df, img_px_size=50, hm_slices=20, visualize=Fal
     new_slices = []
 
     slices = [cv2.resize(np.array(each_slice.pixel_array), (IMG_PX_SIZE, IMG_PX_SIZE)) for each_slice in slices]
-
+    slices = []
     # ******************************To Make Slices Devisable by X***************
 
     sizeOfSlices = len(slices)

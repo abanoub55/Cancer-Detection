@@ -6,8 +6,7 @@ from django.db import models
 
 class Doctor(AbstractUser):
     username = models.CharField(max_length=20, unique=True)
-    password = models.CharField(max_length=15)
-
+    password = models.TextField()
 
 
 class Statistics(models.Model):

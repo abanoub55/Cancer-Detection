@@ -5,7 +5,6 @@ chardet==3.0.4
 cryptography==2.1.4
 cycler==0.10.0
 decorator==4.4.0
-defer==1.0.6
 dicom==0.9.9.post1
 distro-info===0.18ubuntu0.18.04.1
 dj-database-url==0.5.0

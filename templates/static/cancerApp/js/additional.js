@@ -129,6 +129,7 @@ function () {
                     else{
                         alert('patient is healthy')
                     }
+
             },
             error:function(){
             $('.loader').hide();

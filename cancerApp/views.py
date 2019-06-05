@@ -104,6 +104,7 @@ def prediction(request):
         with zipfile.ZipFile(f, 'r') as zip_ref:
             zip_ref.extractall(data_dir)
             print('extracted successfully!!')
+
         prepareImage()
         much_data = np.load("much_data.npy", allow_pickle=True)
         pred_x = np.array(much_data[0][0])
@@ -124,6 +125,7 @@ def prediction(request):
                 else:
                     stat.label = "Cancer"
                 stat.save()
+
             if result == 0:
                 return HttpResponse('patient is healthy')
             elif result == 1:
@@ -396,6 +398,7 @@ def cancer_spread(request):
 
 
 
+
 ##########################################################
 # visualization preprocessing functions and plotting
 ##########################################################
@@ -630,6 +633,127 @@ def getIndex(pid):
             break
         i -=1
     return int(str)-1
+
+##################################################################
+# statistics related functions (cancer-gender-age)
+##################################################################
+
+# stats for cancer
+def cancerStats(request):
+    labels = ['cancer', 'non-cancer']
+    cancer = Statistics.objects.filter(username=request.user.username, label="Cancer")
+    nocancer = Statistics.objects.filter(username=request.user.username, label="Nocancer")
+
+    values = [len(cancer), len(nocancer)]
+    if len(cancer) == 0 and len(nocancer) == 0:
+        return HttpResponse("user has no activity yet")
+    fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+
+    def func(pct, allvals):
+        absolute = int(pct / 100. * np.sum(allvals))
+        return "{:.1f}%".format(pct, absolute)
+
+    wedges, texts, autotexts = ax.pie(values, autopct=lambda pct: func(pct, values),
+                                      textprops=dict(color="w"))
+
+    ax.legend(wedges, labels,
+              title="labels",
+              loc="center left",
+              bbox_to_anchor=(1, 0, 0.5, 1))
+
+    plt.setp(autotexts, size=8, weight="bold")
+
+    ax.set_title("Cancer stats")
+    plt.savefig("templates/static/cancerApp/img/cancer_chart.jpg")
+    plt.clf()
+    return HttpResponse("stats are ready!")
+
+
+# checks if an element is in a list
+def isFound(el, listt):
+    i = 0
+    while i < len(listt):
+
+        if el == listt[i]:
+            return i
+        i += 1
+    return -1
+
+
+# stats for gender
+def genderStats(request):
+    patients = Statistics.objects.filter(username=request.user.username)
+    p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
+    global labels
+    all_genders = labels['Gender']
+    all_p_ids = labels['PatientID']
+    genders = []
+    i = 0
+    for p_id in p_ids:
+        print("im in!")
+        print("p_id = " + p_id)
+        ind = isFound(p_id, all_p_ids)
+        if (ind != -1):
+            print("found one!")
+            print("all_genders[i] = " + all_genders[ind])
+            genders.append(all_genders[ind])
+        i += 1
+
+    fig_labels = ['Male', 'Female']
+    males = [i for i in genders if i == 'Male']
+    females = [i for i in genders if i == 'Female']
+    values = [len(males), len(females)]
+    if len(males) == 0 and len(females) == 0:
+        return HttpResponse("user has no activity yet")
+    fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+
+    def func(pct, allvals):
+        absolute = int(pct / 100. * np.sum(allvals))
+        return "{:.1f}%".format(pct, absolute)
+
+    theme = plt.get_cmap('copper')
+    ax.set_prop_cycle("color", [theme(1. * i / 2) for i in range(3)])
+    wedges, texts, autotexts = ax.pie(values, autopct=lambda pct: func(pct, values),
+                                      textprops=dict(color="W"))
+
+    ax.legend(wedges, fig_labels,
+              title="labels",
+              loc="center left",
+              bbox_to_anchor=(1, 0, 0.5, 1))
+
+    plt.setp(autotexts, size=8, weight="bold")
+    ax.set_title("Gender stats")
+    plt.savefig("templates/static/cancerApp/img/gender_chart.jpg")
+    plt.clf()
+    return HttpResponse("gender Stats success!")
+
+
+# stats for age
+def ageStats(request):
+    patients = Statistics.objects.filter(username=request.user.username)
+    p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
+    global labels
+    all_ages = labels['Age']
+    all_p_ids = labels['PatientID']
+    ages = []
+    i = 0
+    for p_id in p_ids:
+        ind = isFound(p_id, all_p_ids)
+        if ind != -1:
+            ages.append(all_ages[ind])
+        i += 1
+
+    bins = range(0, 120, 20)
+    if len(ages) == 0:
+        return HttpResponse("user has no activity yet")
+    plt.hist(ages, bins=bins)
+    plt.ylabel('Frequency')
+    plt.xlabel('Age')
+    plt.title("Patients\' ages Histogram")
+    plt.savefig("templates/static/cancerApp/img/age_chart.jpg")
+    plt.clf()
+    return HttpResponse("age Stats success!")
+
 
 ##################################################################
 # statistics related functions (cancer-gender-age)

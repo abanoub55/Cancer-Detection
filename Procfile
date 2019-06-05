@@ -1,1 +1,1 @@
-web: gunicorn lung-cancer-detection.wsgi --log-file -
+web: gunicorn cancer-detection-app.wsgi --log-file -

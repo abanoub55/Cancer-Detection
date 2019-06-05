@@ -123,9 +123,13 @@ function () {
                 // Get and display2 the result
                 $('.loader').hide();
                 $('#btn-visualize').show();
-                $('#result').fadeIn(600);
+                if(data!=='healthy'){
                 $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
-                console.log(id);
+                    }
+                    else{
+                        alert('patient is healthy')
+                    }
+
             },
             error:function(){
             $('.loader').hide();

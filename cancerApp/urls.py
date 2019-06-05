@@ -14,10 +14,10 @@ urlpatterns = [
     path('prediction', views.prediction),
     path('visualizeRib', views.ribVisualize),
     path('visualizeLung', views.lungStructure),
+    path('cancerSpread', views.cancer_spread),
     path('cancerStats', views.cancerStats),
     path('genderStats', views.genderStats),
     path('ageStats', views.ageStats),
-    path('infectionStats', views.infectionStats),
     path('clearHistory', views.clearHistory),
 ]
 

@@ -3,7 +3,6 @@ asn1crypto==0.24.0
 certifi==2018.1.18
 chardet==3.0.4
 cryptography==2.1.4
-cupshelpers==1.0
 cycler==0.10.0
 decorator==4.4.0
 defer==1.0.6

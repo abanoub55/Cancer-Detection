@@ -87,5 +87,4 @@ wadllib==1.3.2
 Werkzeug==0.15.4
 whitenoise==4.1.2
 wrapt==1.11.1
-xkit==0.0.0
 zope.interface==4.3.2

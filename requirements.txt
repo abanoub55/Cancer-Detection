@@ -73,7 +73,6 @@ SecretStorage==2.3.1
 simplejson==3.13.2
 six==1.11.0
 sqlparse==0.3.0
-system-service==0.3
 systemd-python==234
 tensorboard==1.7.0
 tensorflow==1.5.0

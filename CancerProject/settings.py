@@ -25,7 +25,7 @@ SECRET_KEY = '8hxqjsxs*p35u7ftya$^%@z6)8o(8&iscmj@wi)y^8*_qzkoks'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cancer-detection-app.herokuapp.com']
 
 
 # Application definition

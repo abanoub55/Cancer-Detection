@@ -11,7 +11,7 @@ from .models import Statistics
 import scipy.ndimage
 import pandas as pd  # for some simple data analysis (right now, just to load in the labels data and quickly reference it)
 from tqdm import tqdm
-import cv2
+#import cv2
 import numpy as np
 import tensorflow as tf
 import os

@@ -282,6 +282,8 @@ def ribVisualize(request):
     if request.method == 'POST':
         print("Rib")
         f = request.FILES['file']
+        if not os.path.isdir("project_data"):
+            os.mkdir("project_data")
         if os.path.isdir(data_dir):
             shutil.rmtree(data_dir)
             print("folder deleted!!")
@@ -314,6 +316,8 @@ def ribVisualize(request):
 def lungStructure(request):
     if request.method == 'POST':
         f = request.FILES['file']
+        if not os.path.isdir("project_data"):
+            os.mkdir("project_data")
         if os.path.isdir(data_dir):
             shutil.rmtree(data_dir)
         else:
@@ -345,6 +349,8 @@ def lungStructure(request):
 def cancer_spread(request):
     if request.method == 'POST':
         f = request.FILES['file']
+        if not os.path.isdir("project_data"):
+            os.mkdir("project_data")
         if os.path.isdir(data_dir):
             shutil.rmtree(data_dir)
         else:

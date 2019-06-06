@@ -76,13 +76,13 @@ function () {
                 return xhr;
             },
             type: 'POST',
+            timeout:0,
             data: form_data,
             contentType: false,
             cache: false,
             processData: false,
             async: true,
             url: 'prediction',
-            timeout:12000000,
             success: function (data) {
                 // Get and display the result
                 $('.loader').hide();
@@ -99,12 +99,11 @@ function () {
                 }
                 console.log('Success!');
             },
-//            error:function(err){
-//            $('.loader').hide();
-//            alert("Error! something went wrong :(");
-//            //window.location.reload();
-//            console.log(err);
-//            },
+           error:function(){
+           $('.loader').hide();
+           alert("Error! something went wrong :(");
+           window.location.reload();
+           },
         });
     });
 

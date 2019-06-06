@@ -99,12 +99,12 @@ function () {
                 }
                 console.log('Success!');
             },
-            error:function(err){
-            $('.loader').hide();
-            alert("Error! something went wrong :(");
-            //window.location.reload();
-            console.log(err);
-            },
+//            error:function(err){
+//            $('.loader').hide();
+//            alert("Error! something went wrong :(");
+//            //window.location.reload();
+//            console.log(err);
+//            },
         });
     });
 

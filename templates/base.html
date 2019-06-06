@@ -16,14 +16,13 @@
     <link rel="stylesheet" href='{% static "cancerApp/fonts/fontawesome/css/font-awesome.min.css" %}'>
     <link rel="stylesheet" href='{% static "cancerApp/fonts/flaticon/font/flaticon.css" %}'>
     <link rel="stylesheet" href='{% static "cancerApp/css/additional.css" %}'>
-    <link media="all" href="{% static 'cancerApp/nvd3/nv.d3.css' %}" type="text/css" rel="stylesheet" />
 
 
     <!-- Theme Style -->
     <link rel="stylesheet" href='{% static "cancerApp/css/style.css" %}'>
   </head>
   <body>
-
+  <div class="min-height">
     <header role="banner">
       <div class="top-bar">
         <div class="container">
@@ -51,7 +50,6 @@
       </div>
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-          <!--<a class="navbar-brand" href="{% url 'home' %}">Medi<span>+</span>  </a>-->
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -100,6 +98,14 @@
 {#      </div>#}
 {#    </section>#}
     <!-- END section -->
+
+
+
+    </div>
+
+
+
+
     <footer class="site-footer" role="contentinfo">
       <div class="container">
         <div class="row mb-5 element-animate">
@@ -154,8 +160,6 @@
     <script src="{% static 'cancerApp/js/jquery.waypoints.min.js' %}"></script>
     <script src="{% static 'cancerApp/js/mainn.js' %}"></script>
     <script src="{% static 'cancerApp/js/additional.js' %}"></script>
-    <script type="text/javascript" src="{% static 'cancerApp/d3/d3.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'cancerApp/nvd3/nv.d3.min.js' %}"></script>
 
   </body>
 </html>

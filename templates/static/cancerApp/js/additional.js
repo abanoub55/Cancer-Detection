@@ -69,6 +69,7 @@ function () {
                 xhr = new window.XMLHttpRequest();
                 xhr.upload.addEventListener("progress",function(e){
                     if(e.lengthComputable){
+                        console.log('file uploaded '+e.loaded +' bytes of '+e.total);
                         var percent = Math.round((e.loaded / e.total)*100);
                         $('#progressBar').attr('aria-valuenow',percent).css('width',percent+'%');
                     }

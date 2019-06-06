@@ -82,6 +82,7 @@ function () {
             processData: false,
             async: true,
             url: 'prediction',
+            timeout:12000000,
             success: function (data) {
                 // Get and display the result
                 $('.loader').hide();

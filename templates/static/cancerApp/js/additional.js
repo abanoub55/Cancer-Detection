@@ -63,9 +63,18 @@ function () {
         // Show loading animation
         $(this).hide();
         $('.loader').show();
-
         // Make prediction by calling api /predict
         $.ajax({
+            xhr: function(){
+                xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress",function(e){
+                    if(e.lengthComputable){
+                        var percent = Math.round((e.loaded / e.total)*100);
+                        $('#progressBar').attr('aria-valuenow',percent).css('width',percent+'%');
+                    }
+                });
+                return xhr;
+            },
             type: 'POST',
             data: form_data,
             contentType: false,
@@ -73,7 +82,6 @@ function () {
             processData: false,
             async: true,
             url: 'prediction',
-            timeout:10000,
             success: function (data) {
                 // Get and display the result
                 $('.loader').hide();
@@ -90,10 +98,11 @@ function () {
                 }
                 console.log('Success!');
             },
-            error:function(){
+            error:function(err){
             $('.loader').hide();
             alert("Error! something went wrong :(");
-            window.location.reload();
+            //window.location.reload();
+            console.log(err);
             },
         });
     });

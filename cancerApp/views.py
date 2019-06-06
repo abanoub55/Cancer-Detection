@@ -114,7 +114,7 @@ def prediction(request):
         weights, biases = defineCnn()
         saver = tf.train.Saver()
         with tf.Session() as sess:
-            saver.restore(sess,save_path=home_dir + 'savedModel')
+            saver.restore(sess,save_path='./savedModel')
             result = feedForward(x, weights, biases, pred_x,sess)
             if len(Statistics.objects.filter(patient_id=pid, username=request.user.username)) == 0:
                 stat = Statistics()

@@ -114,7 +114,7 @@ def prediction(request):
         weights, biases = defineCnn()
         saver = tf.train.Saver()
         with tf.Session() as sess:
-            saver.restore(save_path=home_dir + 'savedModel')
+            saver.restore(sess,save_path=home_dir + 'savedModel')
             result = feedForward(x, weights, biases, pred_x,sess)
             if len(Statistics.objects.filter(patient_id=pid, username=request.user.username)) == 0:
                 stat = Statistics()
@@ -157,7 +157,7 @@ def process_data(patient, labels_df, img_px_size=50, hm_slices=20, visualize=Fal
     new_slices = []
 
     slices = [cv2.resize(np.array(each_slice.pixel_array), (IMG_PX_SIZE, IMG_PX_SIZE)) for each_slice in slices]
-    slices = []
+
     # ******************************To Make Slices Devisable by X***************
 
     sizeOfSlices = len(slices)
@@ -172,7 +172,6 @@ def process_data(patient, labels_df, img_px_size=50, hm_slices=20, visualize=Fal
         new_slices.append(slices[slice_index])
         slice_index += subSample_factor
         slice_index = int(slice_index)
-
     if visualize:
         fig = plt.figure()
         for num, each_slice in enumerate(new_slices):

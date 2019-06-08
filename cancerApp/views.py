@@ -236,7 +236,6 @@ def feedForward(x, weights, biases, pred_x,sess):
     output = tf.matmul(fc2, weights['out']) + biases['out']
 
     result = sess.run(tf.argmax(output, 1)[0], feed_dict={x: pred_x})
-
     return result
 
 def defineCnn():
@@ -302,7 +301,6 @@ def ribVisualize(request):
         slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
 
         slices.sort(key=lambda x: int(x.ImagePositionPatient[2]))
-
         image_o = get_pixels_hu(slices)
         print('Done HU')
         pix_resampled = resample(image_o, slices)

@@ -27,7 +27,6 @@ function () {
     }
 
 
-
     // Upload Preview
     function readURL(input) {
         if (input.files && input.files[0]) {
@@ -36,9 +35,9 @@ function () {
                 $('#imagePreview').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/prediction.jpg')");
                 $('#imagePreview').hide();
                 $('#imagePreview').fadeIn(650);
-                $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/login.jpg')");
-                $('#imagePreview2').hide();
-                $('#imagePreview2').fadeIn(650);
+                $('#lung_img').attr('src', "../static/cancerApp/img/login.jpg");
+                $('#lung_img').hide();
+                $('#lung_img').fadeIn(650);
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -109,6 +108,7 @@ function () {
         form_data.append('image',$('#upload-file')[0]);
         if($('#'+radioID).prop("checked") == true){
         $('#btn-visualize').hide();
+        $('#lung_img').attr('src', "../static/cancerApp/img/login.jpg");
         $('.loader').show();
         $.ajax({
             type: 'POST',
@@ -123,7 +123,8 @@ function () {
                 $('.loader').hide();
                 $('#btn-visualize').show();
                 if(data!=='healthy'){
-                $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
+                d = new Date();
+                $('#lung_img').attr('src', "../static/cancerApp/img/lungfig.jpg?"+d.getTime());
                     }
                   else{
                         alert('patient is healthy')

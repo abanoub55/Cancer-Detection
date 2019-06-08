@@ -10,6 +10,11 @@
     margin-right: auto;
 }
 
+#lung_img{
+height:100%;
+width:100%;
+}
+
 .statsBoxes{
 float:left;
 clear:auto;

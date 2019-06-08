@@ -114,8 +114,8 @@ def prediction(request):
         weights, biases = defineCnn()
         saver = tf.train.Saver()
         with tf.Session() as sess:
-            saver.restore(sess,save_path='./savedModel')
-            result = feedForward(x, weights, biases, pred_x,sess)
+            saver.restore(sess, save_path='./savedModel')
+            result = feedForward(x, weights, biases, pred_x, sess)
             if len(Statistics.objects.filter(patient_id=pid, username=request.user.username)) == 0:
                 stat = Statistics()
                 stat.username = request.user.username
@@ -359,48 +359,101 @@ def cancer_spread(request):
             zip_ref.extractall(data_dir)
         patient = os.listdir(data_dir)[0]
         seriries_id = os.listdir(data_dir + patient + '/')
-        lbls = labels['Label']
-        index = getIndex(patient)
-        if lbls[index] == 1:
-            path = data_dir + patient + '/' + seriries_id[0]
-            slices = read_ct_scan(path)
+        patients = Statistics.objects.filter(patient_id=patient, username=request.user.username)
+        if len(patients)!= 0:
+            print('# of patients',len(patients))
+            print('patient found in stats')
+            lbl = patients[0].label
+            if lbl == 'Cancer':
+                print('label = 1')
+                path = data_dir + patient + '/' + seriries_id[0]
+                slices = read_ct_scan(path)
+                segmented_ct_scan = segment_lung_from_ct_scan(slices)
+                segmented_ct_scan[segmented_ct_scan < 604] = 0
+                # from morphology
+                selem = ball(2)
+                binary = binary_closing(segmented_ct_scan, selem)
 
-            segmented_ct_scan = segment_lung_from_ct_scan(slices)
-            segmented_ct_scan[segmented_ct_scan < 604] = 0
-            # from morphology
-            selem = ball(2)
-            binary = binary_closing(segmented_ct_scan, selem)
+                label_scan = label(binary)
 
-            label_scan = label(binary)
+                areas = [r.area for r in regionprops(label_scan)]
+                areas.sort()
 
-            areas = [r.area for r in regionprops(label_scan)]
-            areas.sort()
+                for r in regionprops(label_scan):
+                    max_x, max_y, max_z = 0, 0, 0
+                    min_x, min_y, min_z = 1000, 1000, 1000
 
-            for r in regionprops(label_scan):
-                max_x, max_y, max_z = 0, 0, 0
-                min_x, min_y, min_z = 1000, 1000, 1000
-
-                for c in r.coords:
-                    max_z = max(c[0], max_z)
-                    max_y = max(c[1], max_y)
-                    max_x = max(c[2], max_x)
-
-                    min_z = min(c[0], min_z)
-                    min_y = min(c[1], min_y)
-                    min_x = min(c[2], min_x)
-                if (min_z == max_z or min_y == max_y or min_x == max_x or r.area > areas[-3]):
                     for c in r.coords:
-                        segmented_ct_scan[c[0], c[1], c[2]] = 0
-                else:
-                    index = (max((max_x - min_x), (max_y - min_y), (max_z - min_z))) / (
-                        min((max_x - min_x), (max_y - min_y), (max_z - min_z)))
+                        max_z = max(c[0], max_z)
+                        max_y = max(c[1], max_y)
+                        max_x = max(c[2], max_x)
 
-            plot_3d(segmented_ct_scan, 604)
-            return HttpResponse('cancerSpread')
+                        min_z = min(c[0], min_z)
+                        min_y = min(c[1], min_y)
+                        min_x = min(c[2], min_x)
+                    if min_z == max_z or min_y == max_y or min_x == max_x or r.area > areas[-3]:
+                        for c in r.coords:
+                            segmented_ct_scan[c[0], c[1], c[2]] = 0
+                    else:
+                        index = (max((max_x - min_x), (max_y - min_y), (max_z - min_z))) / (
+                            min((max_x - min_x), (max_y - min_y), (max_z - min_z)))
+
+                    plot_3d(segmented_ct_scan, 604)
+                    return HttpResponse('cancerSpread')
+            else :
+                print('label = 0')
+                return HttpResponse('healthy')
         else:
-            return HttpResponse('healthy')
+            print('patient is not found in stat')
+            prepareImage()
+            much_data = np.load("much_data.npy", allow_pickle=True)
+            pred_x = np.array(much_data[0][0])
+            tf.reset_default_graph()
+            pred_x = np.reshape(pred_x, [-1, IMG_PX_SIZE, IMG_PX_SIZE, HM_SLICES, 1])
+            x = tf.placeholder('float')
+            weights, biases = defineCnn()
+            saver = tf.train.Saver()
+            with tf.Session() as sess:
+                saver.restore(sess, save_path='./savedModel')
+                result = feedForward(x, weights, biases, pred_x, sess)
+                print('label = ',result)
+                if result == 0:
+                    return HttpResponse('healthy')
+                else:
+                    path = data_dir + patient + '/' + seriries_id[0]
+                    slices = read_ct_scan(path)
+                    segmented_ct_scan = segment_lung_from_ct_scan(slices)
+                    segmented_ct_scan[segmented_ct_scan < 604] = 0
+                    # from morphology
+                    selem = ball(2)
+                    binary = binary_closing(segmented_ct_scan, selem)
 
+                    label_scan = label(binary)
 
+                    areas = [r.area for r in regionprops(label_scan)]
+                    areas.sort()
+
+                    for r in regionprops(label_scan):
+                        max_x, max_y, max_z = 0, 0, 0
+                        min_x, min_y, min_z = 1000, 1000, 1000
+
+                        for c in r.coords:
+                            max_z = max(c[0], max_z)
+                            max_y = max(c[1], max_y)
+                            max_x = max(c[2], max_x)
+
+                            min_z = min(c[0], min_z)
+                            min_y = min(c[1], min_y)
+                            min_x = min(c[2], min_x)
+                        if min_z == max_z or min_y == max_y or min_x == max_x or r.area > areas[-3]:
+                            for c in r.coords:
+                                segmented_ct_scan[c[0], c[1], c[2]] = 0
+                        else:
+                            index = (max((max_x - min_x), (max_y - min_y), (max_z - min_z))) / (
+                                min((max_x - min_x), (max_y - min_y), (max_z - min_z)))
+
+                        plot_3d(segmented_ct_scan, 604)
+                        return HttpResponse('cancerSpread')
 
 
 

@@ -65,17 +65,6 @@ function () {
         $('.loader').show();
         // Make prediction by calling api /predict
         $.ajax({
-            xhr: function(){
-                xhr = new window.XMLHttpRequest();
-                xhr.upload.addEventListener("progress",function(e){
-                    if(e.lengthComputable){
-                        console.log('file uploaded '+e.loaded +' bytes of '+e.total);
-                        var percent = Math.round((e.loaded / e.total)*100);
-                        $('#progressBar').attr('aria-valuenow',percent).css('width',percent+'%');
-                    }
-                });
-                return xhr;
-            },
             type: 'POST',
             timeout:0,
             data: form_data,
@@ -136,7 +125,7 @@ function () {
                 if(data!=='healthy'){
                 $('#imagePreview2').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/lungfig.jpg')");
                     }
-                    else{
+                  else{
                         alert('patient is healthy')
                     }
 

@@ -5,7 +5,6 @@ function () {
     $('.loader').hide();
     $('#result').hide();
     createStats();
-    var form_data ;
     function createStats(){
     let list =  $('input[type=checkbox]');
     let i =0;
@@ -47,8 +46,17 @@ function () {
         $('#btn-predict').show();
         $('#btn-visualize').show();
         readURL(this);
-        form_data = new FormData($('#upload-file')[0]);
+    });
+
+
+    // Predict
+    $('#btn-predict').click(function () {
+        var form_data = new FormData($('#upload-file')[0]);
         form_data.append('image',$('#upload-file')[0])
+        // Show loading animation
+        $(this).hide();
+        $('.loader').show();
+        // Make prediction by calling api /predict
         $.ajax({
             type: 'POST',
             xhr: function(){
@@ -62,35 +70,6 @@ function () {
                 });
                 return xhr;
             },
-            timeout:0,
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            async: true,
-            url: 'confirm_upload',
-            success: function (data) {
-                // Get and display the result
-                console.log(data);
-            },
-           error:function(){
-           $('.loader').hide();
-           alert("Error while uploading! :(");
-           window.location.reload();
-           },
-        });
-    });
-
-
-    // Predict
-    $('#btn-predict').click(function () {
-        
-        // Show loading animation
-        $(this).hide();
-        $('.loader').show();
-        // Make prediction by calling api /predict
-        $.ajax({
-            type: 'POST',
             timeout:0,
             data: form_data,
             contentType: false,
@@ -138,6 +117,17 @@ function () {
         $('.loader').show();
         $.ajax({
             type: 'POST',
+            xhr: function(){
+                xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress",function(e){
+                    if(e.lengthComputable){
+                        console.log('file uploaded '+e.loaded +' bytes of '+e.total);
+                        var percent = Math.round((e.loaded / e.total)*100);
+                        $('#progressBar').attr('aria-valuenow',percent).css('width',percent+'%');
+                    }
+                });
+                return xhr;
+            },
             data: form_data,
             contentType: false,
             cache: false,

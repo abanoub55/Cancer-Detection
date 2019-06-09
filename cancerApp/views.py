@@ -941,17 +941,11 @@ def clearHistory(request):
     return HttpResponse('History cleared!')
 
 
+###############################################
+#confirming image upload
+##############################################
 
-###############################
-# not used functions
-###############################
+def confirm_upload(request):
+    return HttpResponse('uploaded successfully!')
 
-def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
-
-
-def med(l):
-    return sum(l) / len(l)
 

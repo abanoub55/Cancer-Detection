@@ -5,7 +5,7 @@ function () {
     $('.loader').hide();
     $('#result').hide();
     createStats();
-
+    var form_data ;
     function createStats(){
     let list =  $('input[type=checkbox]');
     let i =0;
@@ -32,12 +32,10 @@ function () {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function (e) {
-                $('#imagePreview').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/prediction.jpg')");
-                $('#imagePreview').hide();
-                $('#imagePreview').fadeIn(650);
+                $('#diagnose_img').attr('src', "../static/cancerApp/img/prediction.jpg");
                 $('#lung_img').attr('src', "../static/cancerApp/img/login.jpg");
-                $('#lung_img').hide();
-                $('#lung_img').fadeIn(650);
+                $('.displayed_img').hide();
+                $('.displayed_img').fadeIn(650);
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -48,17 +46,45 @@ function () {
         $('.image-section').show();
         $('#btn-predict').show();
         $('#btn-visualize').show();
-        $('#result').text('');
-        $('#result').hide();
         readURL(this);
+        form_data = new FormData($('#upload-file')[0]);
+        form_data.append('image',$('#upload-file')[0])
+        $.ajax({
+            type: 'POST',
+            xhr: function(){
+                xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress",function(e){
+                    if(e.lengthComputable){
+                        console.log('file uploaded '+e.loaded +' bytes of '+e.total);
+                        var percent = Math.round((e.loaded / e.total)*100);
+                        $('#progressBar').attr('aria-valuenow',percent).css('width',percent+'%');
+                    }
+                });
+                return xhr;
+            },
+            timeout:0,
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            async: true,
+            url: 'confirm_upload',
+            success: function (data) {
+                // Get and display the result
+                console.log(data);
+            },
+           error:function(){
+           $('.loader').hide();
+           alert("Error while uploading! :(");
+           window.location.reload();
+           },
+        });
     });
 
 
     // Predict
     $('#btn-predict').click(function () {
-        var form_data = new FormData($('#upload-file')[0]);
-
-        form_data.append('image',$('#upload-file')[0])
+        
         // Show loading animation
         $(this).hide();
         $('.loader').show();
@@ -79,11 +105,11 @@ function () {
                 $('#result').text(' Result:  ' + data.toString());
                 if(data.toString()=='patient is suspected to have cancer')
                 {
-                    $('#imagePreview').css("background-image", "url('http://127.0.0.1:8000/static/cancerApp/img/unhealthy.jpg')");
+                    $('#diagnose_img').attr("src", "../static/cancerApp/img/unhealthy.jpg");
                 }
                 else
                 {
-                    $('#imagePreview').css('background-image', "url('http://127.0.0.1:8000/static/cancerApp/img/healthy.jpg')");
+                    $('#diagnose_img').attr("src", "../static/cancerApp/img/unhealthy.jpg");
 
                 }
                 console.log('Success!');

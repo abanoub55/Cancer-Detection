@@ -932,20 +932,8 @@ def ageStats(request):
     return HttpResponse("age Stats success!")
 
 
-def infectionStats(request):
-    return HttpResponse("user has no activity yet")
-
 # clears all statistics records for the current user
 def clearHistory(request):
     Statistics.objects.filter(username=request.user.username).delete()
     return HttpResponse('History cleared!')
-
-
-###############################################
-#confirming image upload
-##############################################
-
-def confirm_upload(request):
-    return HttpResponse('uploaded successfully!')
-
 

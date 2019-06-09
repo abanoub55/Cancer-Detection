@@ -19,7 +19,6 @@ urlpatterns = [
     path('genderStats', views.genderStats),
     path('ageStats', views.ageStats),
     path('clearHistory', views.clearHistory),
-    path('confirm_upload',views.confirm_upload),
 ]
 
 

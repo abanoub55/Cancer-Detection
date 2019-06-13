@@ -67,7 +67,7 @@ def prediction(request):
         with tf.Session() as sess:
             saver.restore(sess, save_path='./savedModel')
             result = feedForward(x, weights, biases, pred_x, sess)
-            if len(Statistics.get_stats(patient_id=pid, username=request.user.username)) == 0:
+            if len(Statistics.objects.filter(patient_id=pid, username=request.user.username)) == 0:
                 stat = Statistics()
                 stat.username = request.user.username
                 stat.patient_id = pid
@@ -308,7 +308,7 @@ def cancer_spread(request):
             zip_ref.extractall(data_dir)
         patient = os.listdir(data_dir)[0]
         seriries_id = os.listdir(data_dir + patient + '/')
-        patients = Statistics.get_stats(patient_id=patient, username=request.user.username)
+        patients = Statistics.objects.filter(patient_id=patient, username=request.user.username)
         if len(patients)!= 0:
             print('# of patients',len(patients))
             print('patient found in stats')
@@ -648,8 +648,8 @@ def getIndex(pid):
 # stats for cancer
 def cancerStats(request):
     labels = ['cancer', 'non-cancer']
-    cancer = Statistics.get_stats(username=request.user.username,label='Cancer')
-    nocancer = Statistics.get_stats(username=request.user.username, label='Nocancer')
+    cancer = Statistics.objects.filter(username=request.user.username, label="Cancer")
+    nocancer = Statistics.objects.filter(username=request.user.username, label="Nocancer")
     values = [len(cancer), len(nocancer)]
     if len(cancer) == 0 and len(nocancer) == 0:
         return HttpResponse("user has no activity yet")
@@ -688,7 +688,7 @@ def isFound(el, listt):
 
 # stats for gender
 def genderStats(request):
-    patients = Statistics.get_stats(username=request.user.username)
+    patients = Statistics.objects.filter(username=request.user.username)
     p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
     global labels
     all_genders = labels['Gender']
@@ -736,7 +736,7 @@ def genderStats(request):
 
 # stats for age
 def ageStats(request):
-    patients = Statistics.get_stats(username=request.user.username)
+    patients = Statistics.objects.filter(username=request.user.username)
     p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
     global labels
     all_ages = labels['Age']
@@ -768,8 +768,8 @@ def ageStats(request):
 # stats for cancer
 def cancerStats(request):
     labels = ['cancer', 'non-cancer']
-    cancer = Statistics.get_stats(username=request.user.username, label="Cancer")
-    nocancer = Statistics.get_stats(username=request.user.username, label="Nocancer")
+    cancer = Statistics.objects.filter(username=request.user.username, label="Cancer")
+    nocancer = Statistics.objects.filter(username=request.user.username, label="Nocancer")
 
     values = [len(cancer), len(nocancer)]
     if len(cancer) == 0 and len(nocancer) == 0:
@@ -809,7 +809,7 @@ def isFound(el, listt):
 
 # stats for gender
 def genderStats(request):
-    patients = Statistics.get_stats(username=request.user.username)
+    patients = Statistics.objects.filter(username=request.user.username)
     p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
     global labels
     all_genders = labels['Gender']
@@ -857,7 +857,7 @@ def genderStats(request):
 
 # stats for age
 def ageStats(request):
-    patients = Statistics.get_stats(username=request.user.username)
+    patients = Statistics.objects.filter(username=request.user.username)
     p_ids = [i.patient_id for i in patients]  # select patient ids only from statistics objects
     global labels
     all_ages = labels['Age']
@@ -884,5 +884,5 @@ def ageStats(request):
 
 # clears all statistics records for the current user
 def clearHistory(request):
-    Statistics.get_stats(username=request.user.username).delete()
+    Statistics.objects.filter(username=request.user.username).delete()
     return HttpResponse('History cleared!')

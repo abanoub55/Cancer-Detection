@@ -14,3 +14,7 @@ class Statistics(models.Model):
     username = models.CharField(max_length=20)
     label = models.CharField(max_length=20)
 
+    def get_stats(self,username=any,patient_id=any,label=any):
+       return self.objects.filter(username=username,patient_id=patient_id,label=label)
+
+

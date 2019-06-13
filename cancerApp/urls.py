@@ -1,5 +1,5 @@
 from django.urls import path
-
+from . import appLogic
 from . import views
 
 urlpatterns = [
@@ -11,15 +11,14 @@ urlpatterns = [
     path('stats', views.stats, name='stats'),
     path('login', views.login, name='login'),
     path('signup', views.SignUp.as_view(), name='signup'),
-    path('prediction', views.prediction),
-    path('visualizeRib', views.ribVisualize),
-    path('visualizeLung', views.lungStructure),
-    path('cancerSpread', views.cancer_spread),
-    path('cancerStats', views.cancerStats),
-    path('genderStats', views.genderStats),
-    path('ageStats', views.ageStats),
-    path('clearHistory', views.clearHistory),
+    path('prediction', appLogic.prediction),
+    path('visualizeRib', appLogic.ribVisualize),
+    path('visualizeLung', appLogic.lungStructure),
+    path('cancerSpread', appLogic.cancer_spread),
+    path('cancerStats', appLogic.cancerStats),
+    path('genderStats', appLogic.genderStats),
+    path('ageStats', appLogic.ageStats),
+    path('clearHistory', appLogic.clearHistory),
 ]
-
 
 

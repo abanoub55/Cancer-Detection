@@ -38,11 +38,11 @@
                  <p class="mb-0">
                      {% if user.is_authenticated %}
          <p class="greeting">Hi   {{ user.username }}!</p>
-          <a href="{% url 'logout' %}" class="cta-btn">logout</a>
+          <a href="{% url 'logout' %}" class="cta-btn" id="logout-btn">logout</a>
         {% else %}
         <p class="greeting">You are not logged in</p>
-          <a href="{% url 'login' %}" class="cta-btn">login</a>
-          <a href="{% url 'signup' %}" class="cta-btn">signup</a>
+          <a href="{% url 'login' %}" class="cta-btn" id="login-btn">login</a>
+          <a href="{% url 'signup' %}" class="cta-btn" id="signup-btn">signup</a>
         {% endif %}
             </div>
           </div>
@@ -62,9 +62,9 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="diagnosis.html" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Services</a>
                 <div class="dropdown-menu" aria-labelledby="dropdown04">
-                  <a class="dropdown-item" href="{% url 'visualize' %}">Visualization</a>
-                  <a class="dropdown-item" href="{% url 'stats' %}">Statistics</a>
-                  <a class="dropdown-item" href="{% url 'diagnosis' %}">Cancer Diagnosis</a>
+                  <a class="dropdown-item" href="{% url 'visualize' %}" id="vis-btn">Visualization</a>
+                  <a class="dropdown-item" href="{% url 'stats' %}" id="stats-btn">Statistics</a>
+                  <a class="dropdown-item" href="{% url 'diagnosis' %}" id="cancer-btn">Cancer Diagnosis</a>
                 </div>
               </li>
               <li class="nav-item">

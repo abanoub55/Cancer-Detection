@@ -26,7 +26,7 @@ home_dir = 'project_data/'
 data_dir = home_dir + 'patients/'
 labels = pd.read_csv('FinalLabels.csv')
 
-IMG_PX_SIZE = 80
+IMG_PX_SIZE = 128
 
 HM_SLICES = 40
 
@@ -80,7 +80,6 @@ def prediction(request):
             if result == 0:
                 return HttpResponse('patient is healthy')
             elif result == 1:
-
                 return HttpResponse('patient is suspected to have cancer')
             else:
                 return HttpResponse('unknown result')
@@ -172,45 +171,56 @@ def feedForward(x, weights, biases, pred_x,sess):
 
     conv2 = tf.nn.relu(conv3d(conv1, weights['W_conv2']) + biases['b_conv2'])
     conv2 = maxpool3d(conv2)
-
+    
     conv3 = tf.nn.relu(conv3d(conv2, weights['W_conv3']) + biases['b_conv3'])
     conv3 = maxpool3d(conv3)
-
+    
     conv4 = tf.nn.relu(conv3d(conv3, weights['W_conv4']) + biases['b_conv4'])
     conv4 = maxpool3d(conv4)
 
-    fc = tf.reshape(conv4, [-1, 9600])
-    fc = tf.nn.relu(tf.matmul(fc, weights['W_fc']) + biases['b_fc'])
-    fc2 = tf.nn.relu(tf.matmul(fc, weights['W_fc2']) + biases['b_fc2'])
-    # fc2 = tf.nn.dropout(fc2, keep_rate)
+    conv5 = tf.nn.relu(conv3d(conv4, weights['W_conv5']) + biases['b_conv5'])
+    conv5 = maxpool3d(conv5)
+    
+    fc = tf.reshape(conv5,[-1, 512])
 
-    output = tf.matmul(fc2, weights['out']) + biases['out']
+    fc = tf.nn.relu(tf.matmul(fc, weights['W_fc'])+ biases['b_fc'])
+    
+    fc2 = tf.nn.relu(tf.matmul(fc, weights['W_fc2'])+biases['b_fc2'])
+    
+    fc3 = tf.nn.relu(tf.matmul(fc2, weights['W_fc3'])+biases['b_fc3'])
+
+    #fc3 = tf.nn.dropout(fc3, keep_rate)
+    
+    output = tf.matmul(fc3, weights['out'])+biases['out']
 
     result = sess.run(tf.argmax(output, 1)[0], feed_dict={x: pred_x})
     return result
 
 def defineCnn():
-    weights = {'W_conv1': tf.Variable(tf.random_normal([3, 3, 3, 1, 32])),
+    weights = {'W_conv1':tf.Variable(tf.random_normal([3,3,3,1,32])),
                #       5 x 5 x 5 patches, 32 channels, 64 features to compute.
-               'W_conv2': tf.Variable(tf.random_normal([3, 3, 3, 32, 64])),
+               'W_conv2':tf.Variable(tf.random_normal([3,3,3,32,64])),
                #                                  64 features
-               'W_conv3': tf.Variable(tf.random_normal([3, 3, 3, 64, 32])),
+               'W_conv3':tf.Variable(tf.random_normal([3,3,3,64,32])),
+               
+               'W_conv4':tf.Variable(tf.random_normal([3,3,3,32,128])),
+               
+                'W_conv5':tf.Variable(tf.random_normal([3,3,3,128,32])),
+               
+               'W_fc':tf.Variable(tf.random_normal([512,1024])),
+               'W_fc2':tf.Variable(tf.random_normal([1024,512])),
+                'W_fc3':tf.Variable(tf.random_normal([512,256])),
+               'out':tf.Variable(tf.random_normal([256, n_classes]))}
 
-               'W_conv4': tf.Variable(tf.random_normal([3, 3, 3, 32, 128])),
-
-               'W_fc': tf.Variable(tf.random_normal([9600, 1024])),
-               'W_fc2': tf.Variable(tf.random_normal([1024, 512])),
-
-               'out': tf.Variable(tf.random_normal([512, n_classes]))}
-
-    biases = {'b_conv1': tf.Variable(tf.random_normal([32])),
-              'b_conv2': tf.Variable(tf.random_normal([64])),
-              'b_conv3': tf.Variable(tf.random_normal([32])),
-              'b_conv4': tf.Variable(tf.random_normal([128])),
-
-              'b_fc': tf.Variable(tf.random_normal([1024])),
-              'b_fc2': tf.Variable(tf.random_normal([512])),
-              'out': tf.Variable(tf.random_normal([n_classes]))}
+    biases = {'b_conv1':tf.Variable(tf.random_normal([32])),
+               'b_conv2':tf.Variable(tf.random_normal([64])),
+               'b_conv3':tf.Variable(tf.random_normal([32])),
+               'b_conv4':tf.Variable(tf.random_normal([128])),
+               'b_conv5':tf.Variable(tf.random_normal([32])),
+               'b_fc':tf.Variable(tf.random_normal([1024])),
+               'b_fc2':tf.Variable(tf.random_normal([512])),
+               'b_fc3':tf.Variable(tf.random_normal([256])),
+               'out':tf.Variable(tf.random_normal([n_classes]))}
 
     return weights,biases
 

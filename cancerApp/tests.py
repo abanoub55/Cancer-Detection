@@ -1,13 +1,8 @@
 import time
-from django.test import TestCase
-from django.test import LiveServerTestCase, Client
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
-from cancerApp.models import Doctor
 
 
 # Create your tests here.
@@ -35,8 +30,8 @@ class STestClass(LiveServerTestCase):
         submit = selenium.find_element_by_id('login_submit')
     
         # Fill the form with data
-        username.send_keys('admin')
-        password.send_keys('password')
+        username.send_keys('abanoub')
+        password.send_keys('A2320529g')
         # submitting the form
         submit.send_keys(Keys.RETURN)
         # check the returned result
@@ -68,8 +63,8 @@ class STestClass(LiveServerTestCase):
         submit = selenium.find_element_by_id('login_submit')
     
         # Fill the form with data
-        username.send_keys('admin')
-        password.send_keys('password')
+        username.send_keys('abanoub')
+        password.send_keys('A2320529g')
         # submitting the form
         submit.send_keys(Keys.RETURN)
         # check the returned result
@@ -90,8 +85,8 @@ class STestClass(LiveServerTestCase):
         submit = selenium.find_element_by_id('login_submit')
 
         # Fill the form with data
-        username.send_keys('admin')
-        password.send_keys('password')
+        username.send_keys('abanoub')
+        password.send_keys('A2320529g')
         # submitting the form
         submit.send_keys(Keys.RETURN)
         # check the returned result
@@ -113,8 +108,8 @@ class STestClass(LiveServerTestCase):
         submit = selenium.find_element_by_id("login_submit")
 
         # Fill the form with data
-        username.send_keys("admin")
-        password.send_keys("password")
+        username.send_keys("abanoub")
+        password.send_keys("A2320529g")
         # submitting the form
         submit.send_keys(Keys.RETURN)
         # check the returned result
@@ -142,8 +137,8 @@ class STestClass(LiveServerTestCase):
         submit = selenium.find_element_by_id("login_submit")
 
         # Fill the form with data
-        username.send_keys("admin")
-        password.send_keys("password")
+        username.send_keys("abanoub")
+        password.send_keys("A2320529g")
         # submitting the form
         submit.send_keys(Keys.RETURN)
         # check the returned result
@@ -171,8 +166,8 @@ class STestClass(LiveServerTestCase):
         submit = selenium.find_element_by_id("login_submit")
 
         # Fill the form with data
-        username.send_keys("admin")
-        password.send_keys("password")
+        username.send_keys("abanoub")
+        password.send_keys("A2320529g")
         # submitting the form
         submit.send_keys(Keys.RETURN)
         # check the returned result
@@ -190,15 +185,15 @@ class STestClass(LiveServerTestCase):
 
     # not tested yet
     def test_clearHistory(self):
-    	selenium = self.selenium
+        selenium = self.selenium
         selenium.find_element_by_id("login-btn").click()
         username = selenium.find_element_by_id("id_username")
         password = selenium.find_element_by_id("id_password")
         submit = selenium.find_element_by_id("login_submit")
 
         # Fill the form with data
-        username.send_keys("admin")
-        password.send_keys("password")
+        username.send_keys("abanoub")
+        password.send_keys("A2320529g")
         # submitting the form
         submit.send_keys(Keys.RETURN)
         # check the returned result

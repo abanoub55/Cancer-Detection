@@ -82,13 +82,13 @@ function () {
                 $('.loader').hide();
                 $('#result').fadeIn(600);
                 $('#result').text(' Result:  ' + data.toString());
-                if(data.toString()=='patient is suspected to have cancer')
+                if(data.toString()==='patient is suspected to have cancer')
                 {
                     $('#diagnose_img').attr("src", "../static/cancerApp/img/unhealthy.jpg");
                 }
-                else
+                else if (data.toString() === 'patient is healthy')
                 {
-                    $('#diagnose_img').attr("src", "../static/cancerApp/img/unhealthy.jpg");
+                    $('#diagnose_img').attr("src", "../static/cancerApp/img/healthy.jpg");
 
                 }
                 console.log('Success!');

@@ -45,6 +45,7 @@ function () {
         $('.image-section').show();
         $('#btn-predict').show();
         $('#btn-visualize').show();
+        $('#result').hide();
         readURL(this);
     });
 

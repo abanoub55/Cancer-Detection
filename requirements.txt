@@ -45,7 +45,7 @@ opencv-python==4.1.0.25
 opencv-contrib-python==4.1.0.25
 pandas==0.24.2
 pexpect==4.2.1
-Pillow==5.1.0
+Pillow==8.3.2
 protobuf==3.7.1
 psycopg2==2.8.2
 psycopg2-binary==2.8.2

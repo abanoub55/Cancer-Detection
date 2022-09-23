@@ -46,7 +46,7 @@ opencv-contrib-python==4.1.0.25
 pandas==0.24.2
 pexpect==4.2.1
 Pillow==5.1.0
-protobuf==3.7.1
+protobuf==3.18.3
 psycopg2==2.8.2
 psycopg2-binary==2.8.2
 pycairo==1.16.2
